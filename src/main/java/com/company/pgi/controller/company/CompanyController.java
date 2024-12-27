@@ -23,7 +23,7 @@ public class CompanyController implements ICompanyController{
     private ICompanyService iCompanyService;
 
     @Override
-    @GetMapping("/List")
+    @GetMapping("/list")
     public List<Company> getAllCompany() {
         return iCompanyService.getAllCompany();
     }

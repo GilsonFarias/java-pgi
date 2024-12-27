@@ -1,16 +1,13 @@
 package com.company.pgi.model;
 
 import java.util.Date;
-import java.util.List;
 
 import io.micrometer.common.lang.NonNull;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 
 @Entity
 public class Company {
@@ -27,9 +24,6 @@ public class Company {
     private String business_name;
 
     private Date date_fuoudation;
-
-    @OneToMany(mappedBy="company", cascade = CascadeType.ALL, orphanRemoval=true)
-    private List<Users> users;
 
     public Company(){}
 
@@ -70,13 +64,5 @@ public class Company {
 
     public void setDate_fuoudation(Date date_fuoudation) {
         this.date_fuoudation = date_fuoudation;
-    }
-
-    public List<Users> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<Users> users) {
-        this.users = users;
     }
 }

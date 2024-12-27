@@ -3,7 +3,6 @@ package com.company.pgi;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RestController;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @RestController
 @SpringBootApplication
@@ -13,7 +12,7 @@ public class PgiApplication {
 		SpringApplication.run(PgiApplication.class, args);
 	}
 
-    // Gera uma senha criptografada 
+    //Gera uma senha criptografada 
 	//     public static void main(String[] args) {
     //     // Crie uma instância do BCryptPasswordEncoder
     //     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();

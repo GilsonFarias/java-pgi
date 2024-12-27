@@ -1,15 +1,11 @@
 package com.company.pgi.model;
 
-import java.util.List;
-
 import jakarta.annotation.Nonnull;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 
 @Entity
 public class UserProfile {
@@ -17,8 +13,8 @@ public class UserProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "userProfile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Users> users;
+    // @OneToOne(mappedBy = "userProfile")
+    // private Users users;
 
 
     @Nonnull
@@ -27,15 +23,12 @@ public class UserProfile {
 
     public UserProfile(){};
 
-    public UserProfile(Long id, List<Users> users, String descricao) {
+    public UserProfile(Long id, 
+        // Users users, 
+        String descricao) {
         this.id = id;
-        this.users = users;
+        // this.users = users;
         this.descricao = descricao;
-    }
-
-    public UserProfile(String descricao){
-        this.descricao = descricao;
-
     }
 
     public Long getId() {
@@ -54,11 +47,11 @@ public class UserProfile {
         this.descricao = descricao;
     }
 
-    public List<Users> getUsers() {
-        return users;
-    }
+    // public Users getUsers() {
+    //     return users;
+    // }
 
-    public void setUsers(List<Users> users) {
-        this.users = users;
-    }
+    // public void setUsers(Users users) {
+    //     this.users = users;
+    // }
 }
