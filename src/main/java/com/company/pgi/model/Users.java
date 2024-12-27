@@ -14,7 +14,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -24,25 +23,6 @@ public class Users implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    public Users(){}
-
-    public Users(Long id, String name, String email, String login, String password,
-    UserProfile userProfile, Person person, Company company
-    ) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.login = login;
-        this.password = password;
-        this.userProfile = userProfile;
-        this.person = person;
-        this.company = company;
-    }
-
-    @NonNull
-    @Column(length = 60)
-    private String name;
 
     @Column(length = 60)
     private String email;
@@ -54,34 +34,37 @@ public class Users implements UserDetails{
     @NonNull
     private String password;
 
-    @ManyToOne
-    @JoinColumn(name = "user_profile_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "user_profile_id", referencedColumnName = "id")
     private UserProfile userProfile;
 
     @OneToOne
-    @JoinColumn(name = "person_id")
+    @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person person;
 
-    @ManyToOne
-    @JoinColumn(name = "company_id")
+    @OneToOne
+    @JoinColumn(name = "company_id", referencedColumnName = "id")
     private Company company;
-    
-    public Users(Person person) {
-        this.person = person;
-    }
 
+    public Users(){}
+
+    public Users(Long id, String email, String login, String password,
+                UserProfile userProfile, Person person, Company company
+    ) {
+        this.id = id;
+        this.email = email;
+        this.login = login;
+        this.password = password;
+        this.userProfile = userProfile;
+        this.person = person;
+        this.company = company;
+    }
+    
     public Long getId() {
         return id;
     }
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getEmail() {
@@ -108,10 +91,15 @@ public class Users implements UserDetails{
         this.userProfile = userProfiles;
     }
 
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
+
     @Override
     public String getPassword() {
         return password;
@@ -131,9 +119,5 @@ public class Users implements UserDetails{
 
     public Company getCompany() {
         return company;
-    }
-
-    public void setCompany(Company company) {
-        this.company = company;
     }
 }

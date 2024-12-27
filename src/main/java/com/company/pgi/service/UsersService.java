@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.company.pgi.model.Users;
+import com.company.pgi.projection.users.UsersList;
 import com.company.pgi.repository.IUsersRepository;
 
 @Service
@@ -15,5 +16,9 @@ public class UsersService {
 
     public List<Users> findAll() {
         return iUserRepository.findAll();
+    }
+
+    public List<UsersList> findListUser() {
+        return iUserRepository.findList();
     }
 }
