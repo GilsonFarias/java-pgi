@@ -13,7 +13,7 @@ import jakarta.persistence.Id;
 public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @NonNull
     @Column(length = 60)
@@ -27,18 +27,18 @@ public class Company {
 
     public Company(){}
 
-    public Company(String business_name, Date date_fuoudation, Integer id, String name) {
+    public Company(String business_name, Date date_fuoudation, Long id, String name) {
         this.business_name = business_name;
         this.date_fuoudation = date_fuoudation;
         this.id = id;
         this.name = name;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

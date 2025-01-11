@@ -13,22 +13,16 @@ public class UserProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // @OneToOne(mappedBy = "userProfile")
-    // private Users users;
-
-
     @Nonnull
     @Column(length = 50)
-    private String descricao;
+    private String profile;
 
     public UserProfile(){};
 
     public UserProfile(Long id, 
-        // Users users, 
-        String descricao) {
+        String profile) {
         this.id = id;
-        // this.users = users;
-        this.descricao = descricao;
+        this.profile = profile;
     }
 
     public Long getId() {
@@ -39,19 +33,11 @@ public class UserProfile {
         this.id = id;
     }
 
-    public String getDescricao() {
-        return descricao;
+    public String getProfile() {
+        return profile;
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public void setProfile(String profile) {
+        this.profile = profile;
     }
-
-    // public Users getUsers() {
-    //     return users;
-    // }
-
-    // public void setUsers(Users users) {
-    //     this.users = users;
-    // }
 }

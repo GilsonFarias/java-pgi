@@ -18,32 +18,31 @@ import com.company.pgi.service.Company.ICompanyService;
 
 @RestController
 @RequestMapping("/api/company")
-public class CompanyController implements ICompanyController{
+public class CompanyController{
     @Autowired
     private ICompanyService iCompanyService;
 
-    @Override
     @GetMapping("/list")
     public List<Company> getAllCompany() {
         return iCompanyService.getAllCompany();
     }
 
-    @Override
+
     @GetMapping("/{id}")
-    public ResponseEntity<Company> getCompanyById(@PathVariable Integer id) {
+    public ResponseEntity<Company> getCompanyById(@PathVariable Long id) {
         Optional<Company> company = iCompanyService.getCompanyById(id);
         return company.map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build()); 
     }
 
-    @Override
+
     @PutMapping("/{id}")
     public Company createCompany(Company company) {
         return iCompanyService.saveCompany(company);
     }
 
-    @Override
-    public ResponseEntity<Company> updateCompany(@PathVariable Integer id, @RequestBody Company company) {
+
+    public ResponseEntity<Company> updateCompany(@PathVariable Long id, @RequestBody Company company) {
         Optional<Company> existingCompany = iCompanyService.getCompanyById(id);
         if( existingCompany.isPresent()){
             company.setId(id);
@@ -53,9 +52,9 @@ public class CompanyController implements ICompanyController{
         }
     }
 
-    @Override
-     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCompany(@PathVariable Integer id) {
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCompany(@PathVariable Long id) {
         Optional<Company> existingCompany = iCompanyService.getCompanyById(id);
         if( existingCompany.isPresent()){
             iCompanyService.deleteCompany(id);
