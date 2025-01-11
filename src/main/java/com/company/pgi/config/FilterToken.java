@@ -39,10 +39,9 @@ public class FilterToken extends OncePerRequestFilter{
 
             var users = this.usersRepository.findByLogin(subject);
 
-            var authentication = new UsernamePasswordAuthenticationToken( users, null,  users.getAuthorities());
+            var authentication = new UsernamePasswordAuthenticationToken( users, users,  users.getAuthorities());
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
         }
 
         filterChain.doFilter(request, response);

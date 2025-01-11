@@ -7,7 +7,7 @@ import com.company.pgi.model.Company;
 
 public interface ICompanyService {
     List<Company> getAllCompany();
-    Optional<Company> getCompanyById(Integer id);
+    Optional<Company> getCompanyById(Long id);
     Company saveCompany(Company company);
-    void deleteCompany (Integer id);
+    void deleteCompany (Long id);
 }

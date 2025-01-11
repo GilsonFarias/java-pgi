@@ -1,13 +1,20 @@
 package com.company.pgi.service.person;
 
-import java.util.List;
 import java.util.Optional;
 
-import com.company.pgi.model.Person;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.company.pgi.dto.RequestBase;
+import com.company.pgi.model.Person;
+import com.company.pgi.model.dto.ResponseBase;
+
+@Service
 public interface  IPersonService {
-    List<Person> getAllPerson();
-    Optional<Person> getPersonById(Integer id);
-    Person savePerson(Person person);
-    void deletePerson (Integer id);
+    @ResponseBody
+    Optional<Person> getPersonById(Long id);
+    ResponseBase<Person> savePerson(Person person);
+    void deletePerson (Long id);
+
+    ResponseBase<Person> getPresonList(RequestBase<Person> requestBase);
 }

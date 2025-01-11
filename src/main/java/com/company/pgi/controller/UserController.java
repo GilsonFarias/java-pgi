@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.company.pgi.model.Users;
-import com.company.pgi.projection.users.UsersList;
 import com.company.pgi.service.UsersService;
 
 
@@ -25,10 +24,10 @@ public class UserController {
         return userService.findAll();
     }
 
-    @GetMapping("/list2")
-    public List<UsersList> getUserList() {
-        return userService.findListUser();
-    }
+    // @GetMapping("/list2")
+    // public List<UsersList> getUserList() {
+    //     return userService.findListUser();
+    // }
 
     @PostMapping("/salve")
     public String postSalve(@RequestBody Users users) {       

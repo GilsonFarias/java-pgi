@@ -13,7 +13,7 @@ import jakarta.persistence.Id;
 public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @NonNull
     @Column(length = 60)
@@ -33,7 +33,7 @@ public class Person {
     public Person(){}
     
     // Contructor
-    public Person(Date date_birth, Integer id, String name, String name_responsible,
+    public Person(Date date_birth, Long id, String name, String name_responsible,
             String nro_doc, Integer type_doc, Users users) {
         this.date_birth = date_birth;
         this.id = id;
@@ -43,11 +43,11 @@ public class Person {
         this.type_doc = type_doc;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

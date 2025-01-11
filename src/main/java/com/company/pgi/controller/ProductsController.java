@@ -5,32 +5,30 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.company.pgi.model.Products;
-import com.company.pgi.service.product.IProductsService;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.company.pgi.model.Products;
+import com.company.pgi.service.product.IProductsService;
 
 @RestController
 @RequestMapping("/api/products")
-public class ProductsController implements IProductsController{
+public class ProductsController {
     @Autowired
     private IProductsService iProductsService;
     
-    @Override
+
     @GetMapping("/list")
     public List<Products> getAllProducts() {
         return iProductsService.getAllProducts();
     }
- 
-    @Override
+
     @GetMapping("/{id}")
     public ResponseEntity<Products> getProductById(@PathVariable Long id) {
         Optional<Products> product = iProductsService.getProductsById(id);
@@ -38,13 +36,12 @@ public class ProductsController implements IProductsController{
                 .orElse(ResponseEntity.notFound().build());
     }
     
-    @Override
+
     @PostMapping
     public Products createProduct(@RequestBody Products product) {
         return iProductsService.saveProducts(product);
     }
 
-    @Override
     @PutMapping("/{id}")
     public ResponseEntity<Products> updateProduct(@PathVariable Long id, @RequestBody Products product) {
         Optional<Products> existingProduct = iProductsService.getProductsById(id);
@@ -56,7 +53,7 @@ public class ProductsController implements IProductsController{
         }
     }
 
-        @Override
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         Optional<Products> existingProduct = iProductsService.getProductsById(id);

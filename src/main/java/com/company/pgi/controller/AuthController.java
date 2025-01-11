@@ -1,5 +1,8 @@
 package com.company.pgi.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.company.pgi.dto.LoginDto;
 import com.company.pgi.dto.TokenDto;
-import com.company.pgi.dto.responseBase.ResponseBase;
 import com.company.pgi.model.Users;
+import com.company.pgi.model.dto.ResponseBase;
 import com.company.pgi.service.TokenService;
 
 @RestController
@@ -44,10 +47,13 @@ public class AuthController {
             TokenDto tDto = new TokenDto();
             tDto.setAccessToken(token);
 
+            List<TokenDto> tDtoList = new ArrayList<>();
+            tDtoList.add(tDto);
+
             ResponseBase<TokenDto> response = new ResponseBase<>();
             response.setStatusCode("200");
             response.setMessage("ok");
-            response.setData(tDto);
+            response.setData(tDtoList);
             response.setVersion("v1.0.0");
             
             // Retorna o token como resposta HTTP

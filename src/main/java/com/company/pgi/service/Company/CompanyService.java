@@ -21,7 +21,7 @@ public class CompanyService implements ICompanyService {
     }
 
     @Override
-    public Optional<Company> getCompanyById(Integer id) {
+    public Optional<Company> getCompanyById(Long id) {
         return iCompanyRepository.findById(id);
     }
 
@@ -31,7 +31,7 @@ public class CompanyService implements ICompanyService {
     }
 
     @Override
-    public void deleteCompany(Integer id) {
+    public void deleteCompany(Long id) {
         iCompanyRepository.deleteById(id);
     }
 }
