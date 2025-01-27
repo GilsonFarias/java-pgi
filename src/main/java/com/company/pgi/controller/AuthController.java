@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -51,10 +52,9 @@ public class AuthController {
             tDtoList.add(tDto);
 
             ResponseBase<TokenDto> response = new ResponseBase<>();
-            response.setStatusCode("200");
+            response.setStatusCode(HttpStatus.OK);
             response.setMessage("ok");
             response.setData(tDtoList);
-            response.setVersion("v1.0.0");
             
             // Retorna o token como resposta HTTP
             return ResponseEntity.ok(response);

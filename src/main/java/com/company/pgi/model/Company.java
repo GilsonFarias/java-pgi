@@ -16,30 +16,43 @@ public class Company {
     private Long id;
 
     @NonNull
+    @Column(name = "hierarchy", columnDefinition = "INT COMMENT '1 = Matriz, 2 = Filial'")
+    private Integer hierarchy;
+
+    @NonNull
     @Column(length = 60)
     private String name;
 
     @NonNull
     @Column(length = 60)
-    private String business_name;
+    private String businessName;
 
-    private Date date_fuoudation;
-
+    private Date dateFuondation;
+    
     public Company(){}
-
-    public Company(String business_name, Date date_fuoudation, Long id, String name) {
-        this.business_name = business_name;
-        this.date_fuoudation = date_fuoudation;
+    
+    public Company(Long id, Integer hierarquia, String name, String businessName, Date dateFuondation) {
         this.id = id;
+        this.hierarchy = hierarquia;
         this.name = name;
+        this.businessName = businessName;
+        this.dateFuondation = dateFuondation;
     }
-
+    
     public Long getId() {
         return id;
     }
-
+    
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getHierarchy() {
+        return hierarchy;
+    }
+
+    public void setHierarchy(Integer hierarchy) {
+        this.hierarchy = hierarchy;
     }
 
     public String getName() {
@@ -50,19 +63,20 @@ public class Company {
         this.name = name;
     }
 
-    public String getBusiness_name() {
-        return business_name;
+    public String getBusinessName() {
+        return businessName;
     }
 
-    public void setBusiness_name(String business_name) {
-        this.business_name = business_name;
+    public void setBusinessName(String businessName) {
+        this.businessName = businessName;
     }
 
-    public Date getDate_fuoudation() {
-        return date_fuoudation;
+    public Date getDateFuondation() {
+        return dateFuondation;
     }
 
-    public void setDate_fuoudation(Date date_fuoudation) {
-        this.date_fuoudation = date_fuoudation;
+    public void setDateFuondation(Date dateFuondation) {
+        this.dateFuondation = dateFuondation;
     }
+
 }

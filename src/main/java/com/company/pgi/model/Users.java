@@ -14,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -34,7 +35,7 @@ public class Users implements UserDetails{
     @NonNull
     private String password;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_profile_id", referencedColumnName = "id")
     private UserProfile userProfile;
 
@@ -42,7 +43,7 @@ public class Users implements UserDetails{
     @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person person;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private Company company;
 

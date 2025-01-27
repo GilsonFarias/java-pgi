@@ -37,21 +37,21 @@ public class InitialData implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (iUsersRepository.count() == 0) {
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            String dataHoraString = "2024-12-27T14:30:00";
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
             Person person = new Person();
-            person.setDate_birth(formatter.parse(dataHoraString));
+            person.setDate_birth(formatter.parse("2024-12-27"));
             person.setName("Gilson Farias");
             person.setName_responsible("Gilson Belem");
             person.setNro_doc("11122233345");
-            person.setType_doc(1);
+            person.setType_doc(1); // 1 = CPF, 2 = CNPJ, 3 = Outros
             var regPerson = iPersonRepository.save(person);
 
             Company company = new Company();
-            company.setBusiness_name("Razão Social");
-            company.setDate_fuoudation(formatter.parse(dataHoraString));
+            company.setHierarchy(1);// 1 = Matriz, 2 = Filial
             company.setName("Noma Fantazia");
+            company.setBusinessName("Razão Social");
+            company.setDateFuondation(formatter.parse("2020-01-15"));
             var regCompany = iCompanyRepository.save(company);
 
             UserProfile userProfile = new UserProfile();

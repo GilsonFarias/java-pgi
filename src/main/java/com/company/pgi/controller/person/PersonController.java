@@ -1,8 +1,7 @@
 package com.company.pgi.controller.person;
 
-import java.util.Optional;
+import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,61 +11,68 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.company.pgi.dto.RequestBase;
 import com.company.pgi.model.Person;
-import com.company.pgi.model.dto.ResponseBase;
+import com.company.pgi.model.dto.PersonDto;
+import com.company.pgi.service.Mapper.PersonMapperComponet;
 import com.company.pgi.service.person.IPersonService;
+
+import jakarta.validation.Valid;
 
 
 @RestController
 @RequestMapping("/api/person")
 public class PersonController {
-    @Autowired
-    private IPersonService iPersonService;
-   
-    @PostMapping("/list2")
-    public ResponseBase<Person> getList2( @RequestBody RequestBase<Person> requestBase) {
 
-        return iPersonService.getPresonList(requestBase);
+    private final IPersonService iPersonService;
+    private final PersonMapperComponet personMapperComponet;
+
+    public PersonController(IPersonService iPersonService, PersonMapperComponet personMapperComponet) {
+        this.iPersonService = iPersonService;
+        this.personMapperComponet = personMapperComponet;
     }
+   
+    @PostMapping("/list")
+    public ResponseEntity<List<Person>> getList() {
 
+        var personList = iPersonService.getPresonList();
+
+        return ResponseEntity.ok(personList);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Person> getPersonById(@PathVariable Long id) {
-        Optional<Person> person = iPersonService.getPersonById(id);
-        return person.map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+
+        var person = iPersonService.getPersonById(id);
+
+        return ResponseEntity.ok(person);
     }
 
+    @PostMapping("/insert")
+    public ResponseEntity<Person> insertPerson(@RequestBody @Valid PersonDto personDto) {
 
-    @PostMapping
-    public ResponseBase<Person> createPerson(@RequestBody Person person) {
+        Person pInput = personMapperComponet.toEntity(personDto);
 
-        return iPersonService.savePerson(person);
+        Person pOutput = iPersonService.savePerson(pInput);
+
+        return ResponseEntity.ok(pOutput);
     }
 
+    @PostMapping("/edit")
+    public ResponseEntity<Person> editPerson(@RequestBody @Valid PersonDto personDto) {
 
-    // @PutMapping("/{id}")
-    // public ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody Person person) {
-    //     Optional<Person> existingPerson = iPersonService.getPersonById(id);
-    //     if( existingPerson.isPresent()){
-    //         person.setId(id);
-    //         return ResponseEntity.ok(iPersonService.savePerson(person));
-    //     } else {
-    //         return ResponseEntity.notFound().build();
-    //     }
-    // }
+        Person pInput = personMapperComponet.toEntity(personDto);
 
+        Person pOutput = iPersonService.savePerson(pInput);
 
+        return ResponseEntity.ok(pOutput);
+    }
+    
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePerson(@PathVariable Long id) {
-        Optional<Person> existingPerson = iPersonService.getPersonById(id);
-        if( existingPerson.isPresent()){
-            iPersonService.deletePerson(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<String> deletePerson(@PathVariable Long id){
+
+        var result = iPersonService.deletePerson(id);
+
+        return ResponseEntity.ok(result);
     }
 
 }
