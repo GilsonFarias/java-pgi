@@ -4,45 +4,100 @@ import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.company.pgi.exeception.UserNotFoundException;
+import com.company.pgi.config.SystemPermissions;
+import com.company.pgi.exeception.ApiCustomException;
+import com.company.pgi.exeception.InternalException;
+import com.company.pgi.exeception.PermissionNotFoundException;
+import com.company.pgi.model.Permissions;
 import com.company.pgi.model.PermissionsProfile;
 import com.company.pgi.model.Users;
+import com.company.pgi.model.dto.ResponseBase;
 import com.company.pgi.repository.IPermissionsProfileRepository;
+import com.company.pgi.repository.IPermissionsRepository;
+
+import io.micrometer.observation.annotation.Observed;
 
 @Service
 public class PermissionService implements IPermissionsService {
     @Autowired
     private IPermissionsProfileRepository iPermissionsProfileRepository;
 
+    @Autowired
+    private IPermissionsRepository iPermissionsRepository;
+
+    @Observed
+    public ResponseBase<Permissions> ListPermisssions() {
+        ResponseBase<Permissions> responseBase = new ResponseBase<>();
+
+        var permissions = iPermissionsRepository.findAll();
+        if(permissions.isEmpty()){
+            throw new ApiCustomException(HttpStatus.NOT_ACCEPTABLE,"Resgistro nãos encontrados");
+        }
+
+        responseBase.setData(permissions);
+        responseBase.setStatusCode(HttpStatus.OK);
+        responseBase.setMessage("Ok");
+
+        return responseBase;
+    }
+
     @Override
     @Transactional
-    public Boolean ValidPermission(String permisssionCode) {
+    public void ValidPermission(String permisssionCode) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Boolean permissionAccess = false;
 
-            if (authentication != null && authentication.isAuthenticated()) {
+            if ( authentication != null && authentication.isAuthenticated()) {
                 Users user = (Users) authentication.getPrincipal();
 
-                List<PermissionsProfile> permissions = iPermissionsProfileRepository
-                        .findByUserProfile(user.getUserProfile());
+                List<PermissionsProfile> permissions = iPermissionsProfileRepository.findByUserProfile(user.getUserProfile());
 
                 for (PermissionsProfile permission : permissions) {
-                    if (Objects.equals(permission.getPermissions().getkeyCode(), permisssionCode)
-                            && permission.isStatus()) {
-                        return true;
+                    if (Objects.equals(permission.getPermissions().getkeyCode(), permisssionCode)) {
+                        if (permission.isStatus()) {
+                            permissionAccess = true;
+                        }
                     }
                 }
             }
-            return false;
 
-        } catch (Exception e) {
-            throw new UserNotFoundException("Error em PermissionService.ValidPermission: " + e.getMessage());
+            if(!permissionAccess)
+                throw new PermissionNotFoundException();
+
+            //return permit;
+
+        } catch (InternalException e) {
+            throw new PermissionNotFoundException();
         }
     }
+
+    @Override
+    public ResponseBase<Permissions> updatePermissionsList() {
+        ResponseBase<Permissions> responseBase = new ResponseBase<>();
+        
+        //ValidPermission("PER105");
+
+        iPermissionsRepository.saveAll(SystemPermissions.getSystemPermissions());
+
+        return responseBase;
+
+    }
+
+    @Override
+    public ResponseBase<Permissions> updateProfiles(){
+        ResponseBase<Permissions> responseBase = new ResponseBase<>();
+
+        iPermissionsProfileRepository.saveAll(SystemPermissions.getSystemPermissionsProfile());
+
+        return responseBase;
+    }
+    
 }
 

@@ -1,22 +1,12 @@
 package com.company.pgi.model;
 
-public class ApiError {
-    private int status;
+public class ApiException {
     private String message;
     private String timestamp;
 
-    public ApiError(int status, String message) {
-        this.status = status;
+    public ApiException( String message) {
         this.message = message;
         this.timestamp = java.time.LocalDateTime.now().toString();
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
     }
 
     public String getMessage() {

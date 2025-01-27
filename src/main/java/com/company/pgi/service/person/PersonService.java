@@ -1,18 +1,22 @@
 package com.company.pgi.service.person;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 
-import com.company.pgi.dto.RequestBase;
-import com.company.pgi.model.ApiError;
+import com.company.pgi.exeception.ApiCustomException;
 import com.company.pgi.model.Person;
-import com.company.pgi.model.dto.ResponseBase;
 import com.company.pgi.repository.person.IPersonRepository;
 import com.company.pgi.service.permissions.IPermissionsService;
+
+import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolationException;
 
 @Service
 public class PersonService implements IPersonService {
@@ -23,71 +27,87 @@ public class PersonService implements IPersonService {
     @Autowired
     private IPermissionsService iPermissionsService;
 
+    private static final Logger logger = LoggerFactory.getLogger(PersonService.class);
+
     @Override
-    public Optional<Person> getPersonById(Long id) {
-        return iPersonRepository.findById(id);
+    public Person getPersonById(Long id) {
+        iPermissionsService.ValidPermission("PEN104");
+
+        var personOp = iPersonRepository.findById(id);
+        if (personOp.isEmpty()) {
+            throw new ApiCustomException(HttpStatus.NOT_FOUND, "Pessoa não encontrada com o ID: " + id);
+        }
+        return personOp.get();
     }
 
     @Override
-    public ResponseBase<Person> savePerson(Person person) {
-        ResponseBase<Person> responseBase = new ResponseBase<>();
-        responseBase.setApiError(new ArrayList<>());
-        try {
-            // keyCode: "PEN101", Incluir pessoa"
-            boolean permission = iPermissionsService.ValidPermission("PEN101");
+    @Transactional
+    public Person savePerson(Person person) {
+        iPermissionsService.ValidPermission("PEN101");
 
-            if (!permission) {
-                throw new IllegalAccessException("Permissão negada para executar esta ação.");
+        if (person == null)
+            throw new ApiCustomException(HttpStatus.NOT_FOUND, 
+                "Person not save");
+
+        if(person.getId() != null){
+            var p = iPersonRepository.findById(person.getId());
+            if(p.isEmpty()){
+                throw new ApiCustomException(HttpStatus.INTERNAL_SERVER_ERROR, 
+                    "Error:[Person not save]: Registro não encontrado.");
             }
+        }
 
-            Person rs = iPersonRepository.save(person);
+        try {
+            return iPersonRepository.save(person);
 
-            //responseBase.setData(rs);
-
-            return responseBase;
-
-        } catch (IllegalAccessException e) {
-            responseBase.setData(null);
-            responseBase.setStatusCode("404");
-            responseBase.setMessage(e.getMessage());
-            responseBase.getApiError().add(new ApiError(404, e.getMessage()));
-            return responseBase;
+        } catch (DataIntegrityViolationException e) {
+        // Violação de integridade de dados
+        throw new ApiCustomException(HttpStatus.CONFLICT,
+                "Data integrity violation: " + e.getMostSpecificCause().getMessage());
+        } catch (JpaSystemException e) {
+        // Problemas com JPA
+        throw new ApiCustomException(HttpStatus.INTERNAL_SERVER_ERROR,
+                "Error with the database: " + e.getMostSpecificCause().getMessage());
+        } catch (ConstraintViolationException e) {
+        // Violações de restrições
+            throw new ApiCustomException(HttpStatus.BAD_REQUEST,
+                "Constraint violation: " + e.getMessage());
+        }catch (Exception e) {
+        // Exceções não esperadas
+            throw new ApiCustomException(HttpStatus.INTERNAL_SERVER_ERROR,
+                "Error:[Person not save]: " + e.getMessage());
         }
     }
 
     @Override
-    public void deletePerson(Long id) {
-        iPersonRepository.deleteById(id);
+    public String deletePerson(Long id) {
+        iPermissionsService.ValidPermission("PEN103");
+
+        var p = iPersonRepository.findById(id);
+        if(p.isEmpty()){
+            throw new ApiCustomException(HttpStatus.INTERNAL_SERVER_ERROR, 
+                "Error:[Person not save]: Registro não encontrado.");
+        }
+
+        try {
+            iPersonRepository.deleteById(id);
+
+            return "{ Record deleted }";
+            
+        } catch (Exception e) {
+            //System.err.append(e.getMessage());
+            //logger.error("[Gilson:]" + e.getMessage());
+            throw new ApiCustomException(HttpStatus.INTERNAL_SERVER_ERROR,
+            "Error:[Person not save]: ");// + e.getMessage());
+        }
     }
 
     @Override
-    public ResponseBase<Person> getPresonList(RequestBase<Person> requestBase) {
-        ResponseBase<Person> responseBase = new ResponseBase<>();
-        responseBase.setApiError(new ArrayList<>());
+    public List<Person> getPresonList() {
+        iPermissionsService.ValidPermission("PEN104");
 
-        try {
-            // keyCode: "PEN104", Visualizar Pessoa"
-            boolean permission = iPermissionsService.ValidPermission("PEN104");
+        var personList = iPersonRepository.findAll();
 
-            if (!permission) {
-                throw new IllegalAccessException("Permissão negada para executar esta ação.");
-            }
-
-            List<Person> personList = iPersonRepository.findAll();
-
-            responseBase.setData(personList);
-            responseBase.setStatusCode("200");
-            responseBase.setMessage("ok");
-
-            return responseBase;
-
-        } catch (IllegalAccessException e) {
-            responseBase.setData(null);
-            responseBase.setStatusCode("404");
-            responseBase.setMessage(e.getMessage());
-            responseBase.getApiError().add(new ApiError(404, e.getMessage()));
-            return responseBase;
-        }
-
+        return personList;
     }
 }

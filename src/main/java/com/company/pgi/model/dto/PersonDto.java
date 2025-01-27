@@ -1,47 +1,31 @@
-package com.company.pgi.model;
+package com.company.pgi.model.dto;
 
 import java.util.Date;
 
-import io.micrometer.common.lang.NonNull;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
-@Entity
-public class Person {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class PersonDto {
+
     private Long id;
 
-    @NonNull
-    @Column(length = 60)
+    @NotBlank(message = "O nome é obrigatório.")
+    @Size(max = 60, message = "O nome não pode ter mais de 60 caracteres.")
     private String name;
 
-    @Column(length = 60)
+    @NotBlank(message = "O name_responsible é obrigatório.")
+    @Size(min = 3, max = 50, message = "Name must be between 3 and 50 characters")
     private String name_responsible;
 
+    @NotNull(message = "A data de nascimento é obrigatória.")
     private Date date_birth;
 
+    @NotNull(message = "O tipo do documento é obrigatório.")
     private Integer type_doc;
     
-    @Column(length = 15)
+    @NotBlank(message = "O campo é obrigatório.")
     private String nro_doc;
-
-
-    public Person(){}
-    
-    // Contructor
-    public Person(Date date_birth, Long id, String name, String name_responsible,
-            String nro_doc, Integer type_doc) {
-        this.date_birth = date_birth;
-        this.id = id;
-        this.name = name;
-        this.name_responsible = name_responsible;
-        this.nro_doc = nro_doc;
-        this.type_doc = type_doc;
-    }
 
     public Long getId() {
         return id;
@@ -90,4 +74,5 @@ public class Person {
     public void setNro_doc(String nro_doc) {
         this.nro_doc = nro_doc;
     }
+
 }
