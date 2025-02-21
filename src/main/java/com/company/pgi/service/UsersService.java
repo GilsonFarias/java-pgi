@@ -4,16 +4,19 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.company.pgi.dto.LoginDto;
 import com.company.pgi.dto.UsersDto;
 import com.company.pgi.exeception.ApiCustomException;
-import com.company.pgi.model.dto.ResponseBase;
+import com.company.pgi.model.dto.users.UsersSPDto;
 import com.company.pgi.repository.IUsersRepository;
+import com.company.pgi.repository.UsersRepository;
 import com.company.pgi.service.Mapper.IUsersMapper;
-import com.company.pgi.service.Mapper.UsersMapperComponet;
-import com.company.pgi.service.permissions.IPermissionsService;
+import com.company.pgi.service.permissions.IPermissionService;
 import com.company.pgi.service.person.IPersonService;
+import com.company.pgi.utils.PasswordValidator;
 
 @Service
 public class UsersService {
@@ -21,62 +24,77 @@ public class UsersService {
     private IUsersRepository iUserRepository;
 
     @Autowired
-    private IPermissionsService iPermissionsService;
+    private IPermissionService iPermissionService;
 
     @Autowired
     private IPersonService iPersonService;
 
+    @Autowired
+    private UsersRepository usersRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     //@Override
-    public UsersDto saveUsers(UsersDto userDto) {
-        //ResponseBase<UsersDto> responseBase = new ResponseBase<>();
-        iPermissionsService.ValidPermission("USE101");
+    public UsersSPDto userInsert(UsersDto userDto) {
+        iPermissionService.ValidPermission("USE101");
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         try {
-
             var user = IUsersMapper.INSTANCE.toEntity(userDto);
 
+            if(this.iUserRepository.findByEmail(user.getEmail()) != null){
+                throw new ApiCustomException(HttpStatus.BAD_REQUEST, "E-mail já cadastrado.");
+            }
+
+            if(!PasswordValidator.isValidPassword(user.getPassword()))
+                throw new ApiCustomException(HttpStatus.BAD_REQUEST, "Invalid password");
+            
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            
             var person = iPersonService.savePerson(user.getPerson());
 
             user.setPerson(person);
 
             var userRest = iUserRepository.save(user);
 
-            userDto = IUsersMapper.INSTANCE.toDto(userRest);
+            var userDtoResult = IUsersMapper.INSTANCE.toSPDto(userRest);
 
-            userDto.setPassword("***");
+            return userDtoResult;
 
-            return userDto;
-
-            // responseBase.setData(List.of(userDto));
-
-            // return responseBase;
+        } catch (ApiCustomException e) {
+            throw new ApiCustomException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
-            throw new ApiCustomException(HttpStatus.BAD_REQUEST, "User not faund.");
+            throw new ApiCustomException(HttpStatus.BAD_REQUEST, "Error: Não foi possível executar a instrução.");
         }
-
-    }
-    
-    public ResponseBase<UsersDto> findAll() {
-        ResponseBase<UsersDto> responseBase = new ResponseBase<>();
-        iPermissionsService.ValidPermission("USE105");
-
-        var users = iUserRepository.findAll();
-        if(users.isEmpty()){
-            throw new ApiCustomException(HttpStatus.NOT_FOUND, "User not faund.");
-        }
-
-        var userDto = IUsersMapper.INSTANCE.toDtoList(users);
-
-        responseBase.setData(userDto);
-        responseBase.setStatusCode(HttpStatus.OK);
-        responseBase.setMessage("ok");
-
-        return responseBase;
     }
 
-    public List<UsersDto> findAll2() {
-        iPermissionsService.ValidPermission("USE105");
+    public UsersSPDto userEdit(UsersSPDto userSPDto) {
+        iPermissionService.ValidPermission("USE102");
+
+        try {
+            var user = IUsersMapper.INSTANCE.toEntitySP(userSPDto);
+
+            var person = iPersonService.savePerson(user.getPerson());
+
+            user.setPerson(person);
+
+            var userRest = usersRepository.upDateUsers(user.getId(), user.getEmail(),
+                    user.getEmail(), user.getUserProfile(), user.getPerson(), user.getCompany());
+
+            var userSPDtoResult = IUsersMapper.INSTANCE.toSPDto(userRest.get());
+
+            return userSPDtoResult;
+
+        } catch (ApiCustomException e) {
+            throw new ApiCustomException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            throw new ApiCustomException(HttpStatus.BAD_REQUEST, "Error: Não foi possível executar a instrução.");
+        }
+    }
+
+    public List<UsersSPDto> userList() {
+        iPermissionService.ValidPermission("USE105");
         try {
 
             var users = iUserRepository.findAll();
@@ -84,21 +102,17 @@ public class UsersService {
                 throw new ApiCustomException(HttpStatus.NOT_FOUND, "User not faund.");
             }
 
-            var usersDto = IUsersMapper.INSTANCE.toDtoList(users);
+            var usersSPDto = IUsersMapper.INSTANCE.toSPDtoList(users);
 
-            for (UsersDto userDto : usersDto) {
-                userDto.setPassword("***");
-            }
-
-            return usersDto;
+            return usersSPDto;
 
         } catch (ApiCustomException e) {
             throw new ApiCustomException(e.getStatus(), e.getMessage());
         }
     }
 
-    public UsersDto findById(Long id){
-        iPermissionsService.ValidPermission("PEN104");
+    public UsersSPDto findById(Long id){
+        iPermissionService.ValidPermission("PEN104");
         
         var user =  iUserRepository.findById(id);
         
@@ -106,11 +120,31 @@ public class UsersService {
             throw new ApiCustomException(HttpStatus.NOT_FOUND, "User not faund.");
         }
 
-        UsersMapperComponet map = new UsersMapperComponet();
+        var userSPDto = IUsersMapper.INSTANCE.toSPDto(user.get()); //usersMapperComponet.toDtoSPass(user.get());
 
-        var userDto = map.toDtoSPass(user.get());
-
-        return userDto;
+        return userSPDto;
     }
 
+    public String userEditPassword( LoginDto loginDto ){
+        iPermissionService.ValidPermission("USE106");
+
+        try {
+
+            var userExists = iUserRepository.findByEmail(loginDto.login());
+
+            if (userExists == null)
+                throw new ApiCustomException(HttpStatus.BAD_REQUEST, "Usuário informado não existe.");
+
+            if(!PasswordValidator.isValidPassword(loginDto.password()))
+                throw new ApiCustomException(HttpStatus.BAD_REQUEST, "Invalid password");
+
+            LoginDto lDto = new LoginDto(loginDto.login(), bCryptPasswordEncoder.encode(loginDto.password()));
+
+            return usersRepository.changePassword(lDto);
+        } catch (ApiCustomException e) {
+            throw new ApiCustomException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }catch (Exception e) {
+            throw new ApiCustomException(HttpStatus.BAD_REQUEST, "Error: Não foi possivel alterar a senha.");
+        }
+    }
 }

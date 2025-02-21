@@ -21,18 +21,16 @@ import com.company.pgi.model.dto.ResponseBase;
 import com.company.pgi.repository.IPermissionsProfileRepository;
 import com.company.pgi.repository.IPermissionsRepository;
 
-import io.micrometer.observation.annotation.Observed;
-
 @Service
-public class PermissionService implements IPermissionsService {
+public class PermissionService implements IPermissionService {
     @Autowired
     private IPermissionsProfileRepository iPermissionsProfileRepository;
 
     @Autowired
     private IPermissionsRepository iPermissionsRepository;
 
-    @Observed
-    public ResponseBase<Permissions> ListPermisssions() {
+    @Override
+    public ResponseBase<Permissions> ListPermissions() {
         ResponseBase<Permissions> responseBase = new ResponseBase<>();
 
         var permissions = iPermissionsRepository.findAll();
@@ -79,10 +77,35 @@ public class PermissionService implements IPermissionsService {
     }
 
     @Override
+    @Transactional
+    public Boolean PermissionExternal(String permissionCode){
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Boolean permissionAccess = false;
+            
+            if ( authentication != null && authentication.isAuthenticated()) {
+                Users user = (Users) authentication.getPrincipal();
+                
+                List<PermissionsProfile> permissions = iPermissionsProfileRepository.findByUserProfile(user.getUserProfile());
+                
+                for (PermissionsProfile permission : permissions) {
+                    if (Objects.equals(permission.getPermissions().getkeyCode(), permissionCode)) {
+                        if (permission.isStatus()) {
+                            permissionAccess = true;
+                        }
+                    }
+                }
+            }
+            
+            return permissionAccess;
+        } catch (Exception e) {
+            throw new PermissionNotFoundException();
+        }
+    }
+
+    @Override
     public ResponseBase<Permissions> updatePermissionsList() {
         ResponseBase<Permissions> responseBase = new ResponseBase<>();
-        
-        //ValidPermission("PER105");
 
         iPermissionsRepository.saveAll(SystemPermissions.getSystemPermissions());
 

@@ -16,8 +16,9 @@ public class TokenService {
     public String gerarToken(Users user) {
         return JWT.create()
             .withIssuer("users")
-            .withSubject(user.getUsername())
+            .withSubject(user.getEmail())
             .withClaim("id", user.getId())
+            .withClaim("company", user.getCompany().getId())
             .withExpiresAt(LocalDateTime.now()
                 .plusHours(8)
                 .toInstant(ZoneOffset.of("-04:00"))
