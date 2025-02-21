@@ -1,4 +1,4 @@
-package com.company.pgi.dto;
+package com.company.pgi.model.dto.users;
 
 import com.company.pgi.model.Company;
 import com.company.pgi.model.Person;
@@ -6,11 +6,10 @@ import com.company.pgi.model.UserProfile;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.groups.Default;
 
-public class UsersDto {
+public class UsersSPDto {
 
-    @NotNull(message = "O id é obrigatória", groups = OnUpdate.class)
+    @NotNull(message = "O id é obrigatória")
     private Long id;
 
     @NotBlank(message = "O e-mail é obrigatório.")
@@ -19,9 +18,6 @@ public class UsersDto {
 
     // @NotBlank(message = "O login é obrigatório.")
     // private String login;
-
-    @NotBlank(message = "A senha é obrigatória", groups = OnCreate.class)
-    private String password;
 
     @NotNull(message = "O Profile é obrigatório")
     private UserProfile userProfile;
@@ -32,18 +28,15 @@ public class UsersDto {
     @NotNull(message="A empresa é obrigatória")
     private Company company;
 
-    
-    public UsersDto() {
-    }
+    public  UsersSPDto(){}
 
-    public UsersDto(Long id, String email, /*String login,*/ String password, UserProfile userProfile, Person person, Company company) {
-        this.id = id;
-        this.email = email;
-        //this.login = login;
-        this.password = password;
-        this.userProfile = userProfile;
-        this.person = person;
+    public UsersSPDto(Company company, String email, Long id, /*String login,*/ Person person, UserProfile userProfile) {
         this.company = company;
+        this.email = email;
+        this.id = id;
+        //this.login = login;
+        this.person = person;
+        this.userProfile = userProfile;
     }
 
     public Long getId() {
@@ -77,40 +70,21 @@ public class UsersDto {
     public void setUserProfile(UserProfile userProfile) {
         this.userProfile = userProfile;
     }
-    
+
     public Person getPerson() {
         return person;
     }
-    
+
     public void setPerson(Person person) {
         this.person = person;
     }
-    
+
     public Company getCompany() {
         return company;
     }
-    
+
     public void setCompany(Company company) {
         this.company = company;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    
-    public String getPassword() {
-        return password;
-    }
-    // Método estático para converter a entidade Users em UsersDTO
-    // public static UsersDto fromEntity(Users user) {
-    //     return new UsersDto(
-    //         user.getId(),
-    //         user.getEmail(),
-    //         user.getLogin()
-    //     );
-    // }
-
-    // Interfaces para grupos de validação
-    public interface OnCreate extends Default {}
-    public interface OnUpdate extends Default {}
 }

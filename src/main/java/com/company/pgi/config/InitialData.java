@@ -40,7 +40,7 @@ public class InitialData implements CommandLineRunner {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
             Person person = new Person();
-            person.setDate_birth(formatter.parse("2024-12-27"));
+            person.setDate_birth(formatter.parse("2024-12-27T09:00:00"));
             person.setName("Gilson Farias");
             person.setName_responsible("Gilson Belem");
             person.setNro_doc("11122233345");
@@ -51,7 +51,7 @@ public class InitialData implements CommandLineRunner {
             company.setHierarchy(1);// 1 = Matriz, 2 = Filial
             company.setName("Noma Fantazia");
             company.setBusinessName("Razão Social");
-            company.setDateFuondation(formatter.parse("2020-01-15"));
+            company.setDateFuondation(formatter.parse("2020-01-15T10:00:00"));
             var regCompany = iCompanyRepository.save(company);
 
             UserProfile userProfile = new UserProfile();
@@ -59,8 +59,8 @@ public class InitialData implements CommandLineRunner {
             var regUserProfile = iUserProfileRepository.save(userProfile);
 
             Users userAdm = new Users();
-            userAdm.setEmail("gilson@Gmail.com");
-            userAdm.setLogin("Gilson");
+            userAdm.setEmail("gilson@gmail.com");
+            //userAdm.setLogin("Gilson");
             userAdm.setPassword(passwordEncoder.encode("123456"));
             userAdm.setPerson(regPerson);
             userAdm.setCompany(regCompany);

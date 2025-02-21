@@ -8,6 +8,7 @@ import com.company.pgi.model.Users;
 @Repository
 public interface IUsersRepository extends JpaRepository<Users, Long> {
 
-    Users findByLogin(String login);
+    Users findByEmail(String email);
 
+    //Users findByLoginPass(String login, String password );
 }

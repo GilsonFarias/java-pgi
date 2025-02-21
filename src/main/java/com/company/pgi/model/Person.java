@@ -26,7 +26,7 @@ public class Person {
 
     private Integer type_doc;
     
-    @Column(length = 15)
+    @Column(unique = true, length = 15)
     private String nro_doc;
 
 

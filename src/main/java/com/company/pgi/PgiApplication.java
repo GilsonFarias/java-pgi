@@ -12,8 +12,6 @@ public class PgiApplication {
 		SpringApplication.run(PgiApplication.class, args);
 	}
 
-
-
     //Gera uma senha criptografada 
 	//     public static void main(String[] args) {
     //     // Crie uma instância do BCryptPasswordEncoder

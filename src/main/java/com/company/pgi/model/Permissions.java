@@ -11,6 +11,9 @@ public class Permissions {
     @Column(name="key_code", length = 9)
     private String keyCode;
 
+    @Column(length = 8)
+    private String module;
+
     @NonNull
     @Column(length = 40)
     private String permission;
@@ -20,8 +23,9 @@ public class Permissions {
 
     public Permissions(){}
 
-    public Permissions( String keyCode, String permission, String description ){
+    public Permissions( String keyCode,  String module, String permission, String description){
         this.keyCode = keyCode;
+        this.module = module;
         this.permission = permission;
         this.description = description;
     }
@@ -29,9 +33,17 @@ public class Permissions {
     public String getkeyCode() {
         return keyCode;
     }
-
+    
     public void setKeyCode(String keyCode) {
         this.keyCode = keyCode;
+    }
+
+    public String getModule() {
+        return module;
+    }
+
+    public void setModule(String module) {
+        this.module = module;
     }
 
     public String getPermission() {
@@ -49,4 +61,5 @@ public class Permissions {
     public void setDescription(String description) {
         this.description = description;
     }
+
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,12 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.company.pgi.dto.LoginDto;
 import com.company.pgi.dto.UsersDto;
 import com.company.pgi.model.dto.ResponseBase;
+import com.company.pgi.model.dto.users.UsersSPDto;
 import com.company.pgi.service.UsersService;
-
-import jakarta.validation.Valid;
-
 
 @RestController
 @RequestMapping("/api/users")
@@ -25,35 +25,50 @@ public class UserController {
     private UsersService userService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsersDto> getMethodName(@PathVariable Long id) {
-        var userDto = userService.findById(id);
+    public ResponseEntity<UsersSPDto> getUserById(@PathVariable Long id) {
+        var userSPDto = userService.findById(id);
 
-        return ResponseEntity.ok(userDto);
+        return ResponseEntity.ok(userSPDto);
     }
 
     @GetMapping("/list")
-    public ResponseBase<UsersDto> getAllUsers() {
-        return userService.findAll();
-    }
+    public ResponseEntity<List<UsersSPDto>> getAllUserList() {
 
-    @GetMapping("/list2")
-    public ResponseEntity<List<UsersDto>> getAllUsers2() {
+        var userSPDto = userService.userList();
 
-        var userDto = userService.findAll2();
-
-        if (!userDto.isEmpty()) {
-            return ResponseEntity.ok(userDto);
+        if (!userSPDto.isEmpty()) {
+            return ResponseEntity.ok(userSPDto);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping("/insert")
-    public ResponseEntity<UsersDto> postSalve(@RequestBody @Valid UsersDto usersDto) {   
+    public ResponseEntity<UsersSPDto> userInsert(@RequestBody 
+                                            @Validated(UsersDto.OnCreate.class) UsersDto usersDto) {   
 
-        var dto = userService.saveUsers(usersDto);
+        var dto = userService.userInsert(usersDto);
 
         return ResponseEntity.ok(dto);
     }
-    
+
+    @PostMapping("/edit")
+    public ResponseEntity<UsersSPDto> userEdit(@RequestBody 
+                                            @Validated(UsersDto.OnUpdate.class) UsersSPDto usersSPDto) {   
+
+        var dto = userService.userEdit(usersSPDto);
+
+        return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("/editPassword")
+    public ResponseEntity<ResponseBase<String>> userEditPassword(@RequestBody LoginDto loginDto ) {
+        
+        ResponseBase<String> rsp = new ResponseBase<>();
+
+        rsp.setMessage(userService.userEditPassword(loginDto));
+
+        return ResponseEntity.ok( rsp );
+    }
+
 }
