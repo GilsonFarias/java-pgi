@@ -1,4 +1,4 @@
-package com.company.pgi.dto;
+package com.company.pgi.model.dto;
 
 public class TokenDto {
     private String accessToken;

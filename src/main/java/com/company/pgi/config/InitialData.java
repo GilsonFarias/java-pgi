@@ -8,27 +8,27 @@ import org.springframework.stereotype.Component;
 
 import com.company.pgi.model.Company;
 import com.company.pgi.model.Person;
-import com.company.pgi.model.UserProfile;
+import com.company.pgi.model.Profile;
 import com.company.pgi.model.Users;
 import com.company.pgi.repository.ICompanyRepository;
 import com.company.pgi.repository.IUsersRepository;
 import com.company.pgi.repository.person.IPersonRepository;
-import com.company.pgi.repository.userProfile.IUserProfileRepository;
+import com.company.pgi.repository.profile.IProfileRepository;
 
 @Component
 public class InitialData implements CommandLineRunner {
 
     private final IUsersRepository iUsersRepository;
-    private final IUserProfileRepository iUserProfileRepository;
+    private final IProfileRepository iProfileRepository;
     private final ICompanyRepository iCompanyRepository;
     private final IPersonRepository iPersonRepository;
 
     public InitialData(IUsersRepository iUsersRepository,
-            IUserProfileRepository iUserProfileRepository,
+            IProfileRepository iProfileRepository,
             ICompanyRepository iCompanyRepository,
             IPersonRepository iPersonRepository) {
         this.iUsersRepository = iUsersRepository;
-        this.iUserProfileRepository = iUserProfileRepository;
+        this.iProfileRepository = iProfileRepository;
         this.iCompanyRepository = iCompanyRepository;
         this.iPersonRepository = iPersonRepository;
     }
@@ -44,27 +44,30 @@ public class InitialData implements CommandLineRunner {
             person.setName("Gilson Farias");
             person.setName_responsible("Gilson Belem");
             person.setNro_doc("11122233345");
-            person.setType_doc(1); // 1 = CPF, 2 = CNPJ, 3 = Outros
+            person.setType_doc(1); // 1 = CPF, 2 = RG, 3 = Outros
             var regPerson = iPersonRepository.save(person);
 
             Company company = new Company();
             company.setHierarchy(1);// 1 = Matriz, 2 = Filial
+            company.setCnpj("00623904000173");
             company.setName("Noma Fantazia");
             company.setBusinessName("Razão Social");
             company.setDateFuondation(formatter.parse("2020-01-15T10:00:00"));
-            var regCompany = iCompanyRepository.save(company);
+            iCompanyRepository.save(company);
 
-            UserProfile userProfile = new UserProfile();
-            userProfile.setProfile("Administrador");
-            var regUserProfile = iUserProfileRepository.save(userProfile);
+            Profile profile = new Profile();
+            profile.setProfile("Administrador");
+            profile.setCompany(company);
+            var regProfile = iProfileRepository.save(profile);
 
             Users userAdm = new Users();
             userAdm.setEmail("gilson@gmail.com");
-            //userAdm.setLogin("Gilson");
-            userAdm.setPassword(passwordEncoder.encode("123456"));
+            userAdm.setLogin("gilson@gmail.com");
+            userAdm.setUserType("N1");
+            userAdm.setPassword(passwordEncoder.encode("Gilson#99"));
+            userAdm.setStatus(true);
             userAdm.setPerson(regPerson);
-            userAdm.setCompany(regCompany);
-            userAdm.setUserProfile(regUserProfile);
+            userAdm.setProfile(regProfile);
             iUsersRepository.save(userAdm);
 
             System.out.println("Dados iniciais cadastrados.");

@@ -6,8 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import com.company.pgi.dto.UsersDto;
 import com.company.pgi.model.Users;
+import com.company.pgi.model.dto.users.UsersDto;
 import com.company.pgi.model.dto.users.UsersSPDto;
 
 @Mapper
@@ -24,7 +24,7 @@ public interface IUsersMapper {
 
     List<UsersDto> toDtoList(List<Users> users);
 
-    //Ignore password
+    // Ignore password
 
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "authorities", ignore = true)

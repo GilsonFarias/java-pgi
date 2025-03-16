@@ -12,15 +12,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.company.pgi.dto.LoginDto;
-import com.company.pgi.dto.UsersDto;
+import com.company.pgi.model.Users;
+import com.company.pgi.model.dto.LoginDto;
 import com.company.pgi.model.dto.ResponseBase;
+import com.company.pgi.model.dto.users.UsersDto;
 import com.company.pgi.model.dto.users.UsersSPDto;
 import com.company.pgi.service.UsersService;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+
     @Autowired
     private UsersService userService;
 
@@ -43,9 +45,14 @@ public class UserController {
         }
     }
 
+    @GetMapping("/listByCompany")
+    public ResponseEntity<String> getListByCompany() {
+
+        return ResponseEntity.ok("teste");
+    }
+
     @PostMapping("/insert")
-    public ResponseEntity<UsersSPDto> userInsert(@RequestBody 
-                                            @Validated(UsersDto.OnCreate.class) UsersDto usersDto) {   
+    public ResponseEntity<UsersSPDto> userInsert(@RequestBody @Validated(UsersDto.OnCreate.class) UsersDto usersDto) {
 
         var dto = userService.userInsert(usersDto);
 
@@ -53,8 +60,8 @@ public class UserController {
     }
 
     @PostMapping("/edit")
-    public ResponseEntity<UsersSPDto> userEdit(@RequestBody 
-                                            @Validated(UsersDto.OnUpdate.class) UsersSPDto usersSPDto) {   
+    public ResponseEntity<UsersSPDto> userEditI(
+            @RequestBody @Validated(UsersDto.OnUpdate.class) UsersSPDto usersSPDto) {
 
         var dto = userService.userEdit(usersSPDto);
 
@@ -62,13 +69,21 @@ public class UserController {
     }
 
     @PostMapping("/editPassword")
-    public ResponseEntity<ResponseBase<String>> userEditPassword(@RequestBody LoginDto loginDto ) {
-        
+    public ResponseEntity<ResponseBase<String>> userEditPasswordI(@RequestBody LoginDto loginDto) {
+
         ResponseBase<String> rsp = new ResponseBase<>();
 
         rsp.setMessage(userService.userEditPassword(loginDto));
 
-        return ResponseEntity.ok( rsp );
+        return ResponseEntity.ok(rsp);
+    }
+
+    @PostMapping("/InsertUserAccount")
+    public ResponseEntity<String> postMethodName(@RequestBody Users Users) {
+
+        userService.createUserAccount(Users);
+
+        return ResponseEntity.ok("Seu cadastro foi concluído");
     }
 
 }

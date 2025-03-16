@@ -1,6 +1,5 @@
 package com.company.pgi.config;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,12 +7,12 @@ import org.springframework.stereotype.Component;
 
 import com.company.pgi.model.Permissions;
 import com.company.pgi.model.PermissionsProfile;
-import com.company.pgi.model.UserProfile;
+import com.company.pgi.model.Profile;
 
 @Component
 public class SystemPermissions {
-    
-    public static List<Permissions> getSystemPermissions(){
+
+    public static List<Permissions> getSystemPermissions() {
         List<Permissions> permissions = new ArrayList<>();
         // Penson
         permissions.add(new Permissions("PEN101", "AMD", "Incluir pessoa", "Incluir pessoa"));
@@ -34,7 +33,13 @@ public class SystemPermissions {
         permissions.add(new Permissions("PER103", "ADM", "Deletar permissão", "Deletar permissão"));
         permissions.add(new Permissions("PER104", "ADM", "Visualizar permissão", "Visualizar permissão"));
         permissions.add(new Permissions("PER105", "ADM", "Atualizar permissão", "Atualizar permissão"));
-        //Products / STOCK
+        // Perfil do usuário
+        permissions.add(new Permissions("UPF101", "ADM", "Incluir perfil", "Incluir perfil"));
+        permissions.add(new Permissions("UPF102", "ADM", "Editar perfil", "Editar perfil"));
+        permissions.add(new Permissions("UPF103", "ADM", "Deletar perfil", "Deletar perfil"));
+        permissions.add(new Permissions("UPF104", "ADM", "Visualizar perfil", "Visualizar perfil"));
+        permissions.add(new Permissions("UPF105", "ADM", "Atualizar perfil", "Atualizar perfil"));
+        // Products / STOCK
         permissions.add(new Permissions("PRO101", "STOCK", "Incluir produto", "Incluir produto"));
         permissions.add(new Permissions("PRO102", "STOCK", "Editar produto", "Editar produto"));
         permissions.add(new Permissions("PRO103", "STOCK", "Deletar produto", "Deletar produto"));
@@ -44,18 +49,18 @@ public class SystemPermissions {
         return permissions;
     }
 
-    public static List<PermissionsProfile> getSystemPermissionsProfile(){
+    public static List<PermissionsProfile> getSystemPermissionsProfile() {
 
         List<PermissionsProfile> permissionsProfiles = new ArrayList<>();
 
-        UserProfile uProfile = new UserProfile();
-        
+        Profile uProfile = new Profile();
+
         uProfile.setId(1L);
 
         var permissions = getSystemPermissions();
 
         for (Permissions permission : permissions) {
-            permissionsProfiles.add(new PermissionsProfile( null, permission, uProfile, true));
+            permissionsProfiles.add(new PermissionsProfile(null, permission, uProfile, true));
         }
 
         return permissionsProfiles;

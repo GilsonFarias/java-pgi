@@ -20,7 +20,7 @@ public class PermissionsController {
 
     @GetMapping("/atualizar")
     public String updatePermissionsList() {
-        
+
         iPermissionService.updatePermissionsList();
 
         return "Permissões atualizadas";
@@ -28,13 +28,12 @@ public class PermissionsController {
 
     @GetMapping("/atualizarProfiles")
     public String updateProfiles() {
-        
+
         iPermissionService.updateProfiles();
 
         return "Permissões por perfil atualizadas";
     }
 
-    
     @GetMapping("list")
     public ResponseBase<Permissions> ListPermissions() {
 
@@ -43,9 +42,9 @@ public class PermissionsController {
 
     @GetMapping("/permission")
     public ResponseEntity<Boolean> permisions(@RequestHeader("Authorization") String token,
-    @RequestHeader(name = "Permission", required = false) String permission) {
+            @RequestHeader(name = "Permission", required = false) String permission) {
 
-        var rPermission = iPermissionService.PermissionExternal(permission);
+        var rPermission = iPermissionService.ValidPermission(permission);
 
         return ResponseEntity.ok(rPermission);
     }

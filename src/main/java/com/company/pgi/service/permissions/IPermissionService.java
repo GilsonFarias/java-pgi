@@ -10,7 +10,7 @@ import com.company.pgi.model.dto.ResponseBase;
 public interface IPermissionService {
 
     @ResponseBody
-    void ValidPermission(String permisssionCode);
+    Boolean ValidPermission(String permisssionCode);
 
     ResponseBase<Permissions> updatePermissionsList();
 
@@ -18,6 +18,4 @@ public interface IPermissionService {
 
     ResponseBase<Permissions> updateProfiles();
 
-    Boolean PermissionExternal(String permissionCode);
-    
 }

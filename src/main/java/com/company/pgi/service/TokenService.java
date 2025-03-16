@@ -15,22 +15,23 @@ public class TokenService {
 
     public String gerarToken(Users user) {
         return JWT.create()
-            .withIssuer("users")
-            .withSubject(user.getEmail())
-            .withClaim("id", user.getId())
-            .withClaim("company", user.getCompany().getId())
-            .withExpiresAt(LocalDateTime.now()
-                .plusHours(8)
-                .toInstant(ZoneOffset.of("-04:00"))
-            ).sign(Algorithm.HMAC256("secreta_54KHeG4D5q5GtoIO6Tv6Ya2W6çWEqR6YyR"));
+                .withIssuer("users")
+                .withSubject(user.getEmail())
+                .withClaim("id", user.getId())
+                .withClaim("usertype", user.getUserType())
+                .withClaim("cnpj", user.getProfile().getCompany().getCnpj())
+                .withExpiresAt(LocalDateTime.now()
+                        .plusHours(8)
+                        .toInstant(ZoneOffset.of("-04:00")))
+                .sign(Algorithm.HMAC256("secreta_54KHeG4D5q5GtoIO6Tv6Ya2W6çWEqR6YyR"));
     }
 
     public String getSubject(String token) {
         try {
             return JWT.require(Algorithm.HMAC256("secreta_54KHeG4D5q5GtoIO6Tv6Ya2W6çWEqR6YyR"))
-                .withIssuer("users")
-                .build().verify(token).getSubject();
-            
+                    .withIssuer("users")
+                    .build().verify(token).getSubject();
+
         } catch (JWTVerificationException e) {
             throw new IllegalArgumentException("Token inválido ou expirado", e);
         }

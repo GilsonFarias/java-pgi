@@ -20,6 +20,7 @@ import com.company.pgi.model.Users;
 import com.company.pgi.model.dto.ResponseBase;
 import com.company.pgi.repository.IPermissionsProfileRepository;
 import com.company.pgi.repository.IPermissionsRepository;
+import com.company.pgi.utils.enuns.UserType;
 
 @Service
 public class PermissionService implements IPermissionService {
@@ -31,11 +32,12 @@ public class PermissionService implements IPermissionService {
 
     @Override
     public ResponseBase<Permissions> ListPermissions() {
+        ValidPermission("PER104");
         ResponseBase<Permissions> responseBase = new ResponseBase<>();
 
         var permissions = iPermissionsRepository.findAll();
-        if(permissions.isEmpty()){
-            throw new ApiCustomException(HttpStatus.NOT_ACCEPTABLE,"Resgistro nãos encontrados");
+        if (permissions.isEmpty()) {
+            throw new ApiCustomException(HttpStatus.NOT_ACCEPTABLE, "Resgistro nãos encontrados");
         }
 
         responseBase.setData(permissions);
@@ -47,58 +49,44 @@ public class PermissionService implements IPermissionService {
 
     @Override
     @Transactional
-    public void ValidPermission(String permisssionCode) {
+    public Boolean ValidPermission(String permisssionCode) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             Boolean permissionAccess = false;
 
-            if ( authentication != null && authentication.isAuthenticated()) {
+            if (authentication != null && authentication.isAuthenticated()) {
                 Users user = (Users) authentication.getPrincipal();
 
-                List<PermissionsProfile> permissions = iPermissionsProfileRepository.findByUserProfile(user.getUserProfile());
+                // Preenche o status com FALSE se ele for null
+                user.setStatus(Boolean.TRUE.equals(user.getStatus()));
 
-                for (PermissionsProfile permission : permissions) {
-                    if (Objects.equals(permission.getPermissions().getkeyCode(), permisssionCode)) {
-                        if (permission.isStatus()) {
-                            permissionAccess = true;
+                if (!user.getStatus() && user.getId() != 1)
+                    throw new ApiCustomException(HttpStatus.BAD_REQUEST, "Usuário com status desativado.");
+
+                if (user.getUserType() != null && !user.getUserType().isEmpty()
+                        && user.getUserType().equals(UserType.N1.getCode())) {
+                    permissionAccess = true;
+                } else {
+
+                    List<PermissionsProfile> permissions = iPermissionsProfileRepository
+                            .findByProfile(user.getProfile());
+
+                    for (PermissionsProfile permission : permissions) {
+                        if (Objects.equals(permission.getPermissions().getkeyCode(), permisssionCode)) {
+                            if (permission.isStatus()) {
+                                permissionAccess = true;
+                            }
                         }
                     }
                 }
             }
 
-            if(!permissionAccess)
+            if (!permissionAccess)
                 throw new PermissionNotFoundException();
 
-            //return permit;
+            return permissionAccess;
 
         } catch (InternalException e) {
-            throw new PermissionNotFoundException();
-        }
-    }
-
-    @Override
-    @Transactional
-    public Boolean PermissionExternal(String permissionCode){
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            Boolean permissionAccess = false;
-            
-            if ( authentication != null && authentication.isAuthenticated()) {
-                Users user = (Users) authentication.getPrincipal();
-                
-                List<PermissionsProfile> permissions = iPermissionsProfileRepository.findByUserProfile(user.getUserProfile());
-                
-                for (PermissionsProfile permission : permissions) {
-                    if (Objects.equals(permission.getPermissions().getkeyCode(), permissionCode)) {
-                        if (permission.isStatus()) {
-                            permissionAccess = true;
-                        }
-                    }
-                }
-            }
-            
-            return permissionAccess;
-        } catch (Exception e) {
             throw new PermissionNotFoundException();
         }
     }
@@ -114,13 +102,12 @@ public class PermissionService implements IPermissionService {
     }
 
     @Override
-    public ResponseBase<Permissions> updateProfiles(){
+    public ResponseBase<Permissions> updateProfiles() {
         ResponseBase<Permissions> responseBase = new ResponseBase<>();
 
         iPermissionsProfileRepository.saveAll(SystemPermissions.getSystemPermissionsProfile());
 
         return responseBase;
     }
-    
-}
 
+}
