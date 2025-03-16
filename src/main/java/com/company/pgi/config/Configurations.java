@@ -22,28 +22,32 @@ public class Configurations {
     private FilterToken filter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-        .csrf(csrf -> csrf.disable()) // Desabilita o CSRF
-        .sessionManagement(session -> 
-            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Configura a sessão como stateless
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(HttpMethod.POST, "/login").permitAll() // Permite POST em /login
-            //.requestMatchers(HttpMethod.GET, "/users").permitAll()   // Permite GET em /hello
-            .anyRequest().authenticated() // Exige autenticação para qualquer outra rota
-        )
-        .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
-        .build();
+                .csrf(csrf -> csrf.disable()) // Desabilita o CSRF
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Configura
+                                                                                                              // a
+                                                                                                              // sessão
+                                                                                                              // como
+                                                                                                              // stateless
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/login").permitAll() // Permite POST em /login
+                        // .requestMatchers(HttpMethod.GET, "/users").permitAll() // Permite GET em
+                        // /hello
+                        .anyRequest().authenticated() // Exige autenticação para qualquer outra rota
+                )
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager
-        (AuthenticationConfiguration authenticationConfiguration) throws Exception{
-            return authenticationConfiguration.getAuthenticationManager();
-        }
-    
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 

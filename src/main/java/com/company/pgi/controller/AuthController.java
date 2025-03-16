@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.company.pgi.dto.LoginDto;
-import com.company.pgi.dto.TokenDto;
 import com.company.pgi.model.Users;
+import com.company.pgi.model.dto.LoginDto;
 import com.company.pgi.model.dto.ResponseBase;
+import com.company.pgi.model.dto.TokenDto;
 import com.company.pgi.service.TokenService;
 
 @RestController
@@ -33,15 +33,15 @@ public class AuthController {
         try {
 
             // Cria o token de autenticação com as credenciais fornecidas
-            Authentication authenticationToken =
-            UsernamePasswordAuthenticationToken.unauthenticated(login.login(), login.password());
-            
+            Authentication authenticationToken = UsernamePasswordAuthenticationToken.unauthenticated(login.login(),
+                    login.password());
+
             // Executa a autenticação
             Authentication authenticated = authenticationManager.authenticate(authenticationToken);
-            
+
             // Obtém o usuário autenticado
             Users user = (Users) authenticated.getPrincipal();
-            
+
             // Gera o token para o usuário autenticado
             String token = tokenService.gerarToken(user);
 
@@ -55,13 +55,12 @@ public class AuthController {
             response.setStatusCode(HttpStatus.OK);
             response.setMessage("ok");
             response.setData(tDtoList);
-            
+
             // Retorna o token como resposta HTTP
             return ResponseEntity.ok(response);
 
-
         } catch (AuthenticationException e) {
-            
+
             return ResponseEntity.notFound().build();
         }
     }

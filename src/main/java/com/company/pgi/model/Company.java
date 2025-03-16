@@ -8,12 +8,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotNull
+    @Column(name = "cnpj", unique = true, length = 15, nullable=false)
+    private String cnpj;
 
     @NonNull
     @Column(name = "hierarchy", columnDefinition = "INT COMMENT '1 = Matriz, 2 = Filial'")
@@ -31,12 +36,17 @@ public class Company {
     
     public Company(){}
     
-    public Company(Long id, Integer hierarquia, String name, String businessName, Date dateFuondation) {
+    public Company(Long id, String cnpj, Integer hierarquia, String name, String businessName, Date dateFuondation) {
         this.id = id;
+        this.cnpj = cnpj;
         this.hierarchy = hierarquia;
         this.name = name;
         this.businessName = businessName;
         this.dateFuondation = dateFuondation;
+    }
+
+    public Company(String cnpj) {
+        this.cnpj = cnpj;
     }
     
     public Long getId() {
@@ -46,7 +56,15 @@ public class Company {
     public void setId(Long id) {
         this.id = id;
     }
+    
+    public String getCnpj() {
+        return cnpj;
+    }
 
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
+    }
+    
     public Integer getHierarchy() {
         return hierarchy;
     }
@@ -78,5 +96,6 @@ public class Company {
     public void setDateFuondation(Date dateFuondation) {
         this.dateFuondation = dateFuondation;
     }
+
 
 }

@@ -20,50 +20,61 @@ import jakarta.validation.groups.Default;
 
 @Entity(name = "Users")
 @Table(name = "users")
-public class Users implements UserDetails{
+public class Users implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true, nullable = false, length = 60)
     private String email;
-    
+
+    @Column(name = "login", nullable = false, length = 30)
+    private String login;
+
     // @NonNull
-    // @Column(unique = true, nullable = false, length = 40)
-    // private String login;
-    
-    //@NonNull
     private String password;
 
+    @Column(name = "user_type", nullable = false, length = 8)
+    private String userType;
+
+    @Column(name = "status")
+    private Boolean status;
+
     @ManyToOne
-    @JoinColumn(name = "user_profile_id", referencedColumnName = "id")
-    private UserProfile userProfile;
+    @JoinColumn(name = "profile_id", referencedColumnName = "id")
+    private Profile profile;
 
     @OneToOne
     @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person person;
 
-    @ManyToOne
-    @JoinColumn(name = "company_id", referencedColumnName = "id")
-    private Company company;
+    // @ManyToOne
+    // @JoinColumn(name = "company_id", referencedColumnName = "id")
+    // private Company company;
 
-    public Users(){}
+    public Users() {
+    }
 
-    public Users(Long id, String email, /*String login,*/ String password,
-                UserProfile userProfile, Person person, Company company
+    public Users(Long id, String email, String password, String login,
+            String userType, Boolean status, Profile profile, Person person
+    // , Company company
     ) {
         this.id = id;
         this.email = email;
-        // this.login = login;
+        this.login = login;
         this.password = password;
-        this.userProfile = userProfile;
+        this.status = status;
+        this.userType = userType;
+        this.profile = profile;
         this.person = person;
-        this.company = company;
+        // this.company = company;
     }
-    
+
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -71,16 +82,19 @@ public class Users implements UserDetails{
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
-    // public String getLogin() {
-    //     return login;
-    // }
-    // public void setLogin(String login) {
-    //     this.login = login;
-    // }
-    
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
     @Override
     public String getPassword() {
         return password;
@@ -90,32 +104,49 @@ public class Users implements UserDetails{
         this.password = password;
     }
 
-
-    public UserProfile getUserProfile(){
-        return userProfile;
+    public String getUserType() {
+        return userType;
     }
 
-    public void setUserProfile(UserProfile userProfiles){
-        this.userProfile = userProfiles;
+    public Boolean getStatus() {
+        return status;
     }
 
-    public Company getCompany() {
-        return company;
+    public void setStatus(Boolean status) {
+        this.status = status;
     }
-    public void setCompany(Company company) {
-        this.company = company;
+
+    public void setUserType(String userType) {
+        this.userType = userType;
     }
-    
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
+    // public Company getCompany() {
+    // return company;
+    // }
+
+    // public void setCompany(Company company) {
+    // this.company = company;
+    // }
+
     public Person getPerson() {
         return person;
     }
+
     public void setPerson(Person person) {
         this.person = person;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority( getUserProfile().getProfile()));
+        return List.of(new SimpleGrantedAuthority(getProfile().getProfile()));
     }
 
     @Override
@@ -123,8 +154,11 @@ public class Users implements UserDetails{
         return email;
     }
 
-        // Interfaces para grupos de validação
-    public interface OnCreate extends Default {}
-    public interface OnUpdate extends Default {}
+    // Interfaces para grupos de validação
+    public interface OnCreate extends Default {
+    }
+
+    public interface OnUpdate extends Default {
+    }
 
 }

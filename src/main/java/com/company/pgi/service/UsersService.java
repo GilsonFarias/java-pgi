@@ -1,5 +1,6 @@
 package com.company.pgi.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,16 +8,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.company.pgi.dto.LoginDto;
-import com.company.pgi.dto.UsersDto;
 import com.company.pgi.exeception.ApiCustomException;
+import com.company.pgi.model.Users;
+import com.company.pgi.model.dto.LoginDto;
+import com.company.pgi.model.dto.users.UsersDto;
 import com.company.pgi.model.dto.users.UsersSPDto;
+import com.company.pgi.repository.ICompanyRepository;
 import com.company.pgi.repository.IUsersRepository;
-import com.company.pgi.repository.UsersRepository;
+import com.company.pgi.repository.person.IPersonRepository;
+import com.company.pgi.repository.profile.IProfileRepository;
 import com.company.pgi.service.Mapper.IUsersMapper;
 import com.company.pgi.service.permissions.IPermissionService;
 import com.company.pgi.service.person.IPersonService;
+import com.company.pgi.utils.AuthenticatedUser;
 import com.company.pgi.utils.PasswordValidator;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class UsersService {
@@ -30,12 +37,21 @@ public class UsersService {
     private IPersonService iPersonService;
 
     @Autowired
-    private UsersRepository usersRepository;
+    private IUsersRepository iUsersRepository;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    //@Override
+    @Autowired
+    private ICompanyRepository iCompanyRepository;
+
+    @Autowired
+    private IPersonRepository iPersonRepository;
+
+    @Autowired
+    private IProfileRepository iProfileRepository;
+
+    // @Override
     public UsersSPDto userInsert(UsersDto userDto) {
         iPermissionService.ValidPermission("USE101");
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -43,15 +59,15 @@ public class UsersService {
         try {
             var user = IUsersMapper.INSTANCE.toEntity(userDto);
 
-            if(this.iUserRepository.findByEmail(user.getEmail()) != null){
+            if (this.iUserRepository.findByEmail(user.getEmail()) != null) {
                 throw new ApiCustomException(HttpStatus.BAD_REQUEST, "E-mail já cadastrado.");
             }
 
-            if(!PasswordValidator.isValidPassword(user.getPassword()))
+            if (!PasswordValidator.isValidPassword(user.getPassword()))
                 throw new ApiCustomException(HttpStatus.BAD_REQUEST, "Invalid password");
-            
+
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            
+
             var person = iPersonService.savePerson(user.getPerson());
 
             user.setPerson(person);
@@ -69,6 +85,49 @@ public class UsersService {
         }
     }
 
+    public List<UsersSPDto> userList() {
+        iPermissionService.ValidPermission("USE105");
+        try {
+            Users user = AuthenticatedUser.getAuthenticatedUser();
+
+            List<Users> userList = new ArrayList<>();
+
+            switch (user.getUserType()) {
+                case "N1" -> userList = iUserRepository.findAll();
+                case "N3", "N4" -> {
+                    var company = user.getProfile().getCompany();
+                    userList = iUserRepository.findByProfile_Company(company);
+                }
+                default -> throw new ApiCustomException(HttpStatus.NOT_ACCEPTABLE, "User not faund.");
+            }
+
+            if (userList.isEmpty()) {
+                throw new ApiCustomException(HttpStatus.NOT_FOUND, "User not faund.");
+            }
+
+            var usersSPDto = IUsersMapper.INSTANCE.toSPDtoList(userList);
+
+            return usersSPDto;
+
+        } catch (ApiCustomException e) {
+            throw new ApiCustomException(e.getStatus(), e.getMessage());
+        }
+    }
+
+    public UsersSPDto findById(Long id) {
+        iPermissionService.ValidPermission("PEN104");
+
+        var user = iUserRepository.findById(id);
+
+        if (user.isEmpty()) {
+            throw new ApiCustomException(HttpStatus.NOT_FOUND, "User not faund.");
+        }
+
+        var userSPDto = IUsersMapper.INSTANCE.toSPDto(user.get()); // usersMapperComponet.toDtoSPass(user.get());
+
+        return userSPDto;
+    }
+
     public UsersSPDto userEdit(UsersSPDto userSPDto) {
         iPermissionService.ValidPermission("USE102");
 
@@ -79,13 +138,18 @@ public class UsersService {
 
             user.setPerson(person);
 
-            var userRest = usersRepository.upDateUsers(user.getId(), user.getEmail(),
-                    user.getEmail(), user.getUserProfile(), user.getPerson(), user.getCompany());
+            int updated = iUsersRepository.updateUser(user.getId(), user.getEmail(), user.getLogin(),
+                    user.getUserType(), user.getStatus(), user.getProfile(), user.getPerson());
 
-            var userSPDtoResult = IUsersMapper.INSTANCE.toSPDto(userRest.get());
+            if (updated > 0) {
+                Users userRest = iUserRepository.findById(user.getId())
+                        .orElseThrow(() -> new ApiCustomException(HttpStatus.NOT_FOUND, "Usuário não encontrado."));
 
-            return userSPDtoResult;
+                return IUsersMapper.INSTANCE.toSPDto(userRest);
+            } else {
 
+                throw new ApiCustomException(HttpStatus.BAD_REQUEST, "Falha na atualização.");
+            }
         } catch (ApiCustomException e) {
             throw new ApiCustomException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
@@ -93,39 +157,7 @@ public class UsersService {
         }
     }
 
-    public List<UsersSPDto> userList() {
-        iPermissionService.ValidPermission("USE105");
-        try {
-
-            var users = iUserRepository.findAll();
-            if (users.isEmpty()) {
-                throw new ApiCustomException(HttpStatus.NOT_FOUND, "User not faund.");
-            }
-
-            var usersSPDto = IUsersMapper.INSTANCE.toSPDtoList(users);
-
-            return usersSPDto;
-
-        } catch (ApiCustomException e) {
-            throw new ApiCustomException(e.getStatus(), e.getMessage());
-        }
-    }
-
-    public UsersSPDto findById(Long id){
-        iPermissionService.ValidPermission("PEN104");
-        
-        var user =  iUserRepository.findById(id);
-        
-        if (user.isEmpty()) {
-            throw new ApiCustomException(HttpStatus.NOT_FOUND, "User not faund.");
-        }
-
-        var userSPDto = IUsersMapper.INSTANCE.toSPDto(user.get()); //usersMapperComponet.toDtoSPass(user.get());
-
-        return userSPDto;
-    }
-
-    public String userEditPassword( LoginDto loginDto ){
+    public String userEditPassword(LoginDto loginDto) {
         iPermissionService.ValidPermission("USE106");
 
         try {
@@ -135,16 +167,50 @@ public class UsersService {
             if (userExists == null)
                 throw new ApiCustomException(HttpStatus.BAD_REQUEST, "Usuário informado não existe.");
 
-            if(!PasswordValidator.isValidPassword(loginDto.password()))
+            if (!PasswordValidator.isValidPassword(loginDto.password()))
                 throw new ApiCustomException(HttpStatus.BAD_REQUEST, "Invalid password");
 
-            LoginDto lDto = new LoginDto(loginDto.login(), bCryptPasswordEncoder.encode(loginDto.password()));
+            iUsersRepository.changePassword(bCryptPasswordEncoder.encode(loginDto.password()), loginDto.login());
 
-            return usersRepository.changePassword(lDto);
+            return "Senha alterada";
+
         } catch (ApiCustomException e) {
             throw new ApiCustomException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new ApiCustomException(HttpStatus.BAD_REQUEST, "Error: Não foi possivel alterar a senha.");
         }
     }
+
+    @Transactional
+    public String createUserAccount(Users user) {
+        try {
+
+            if (!PasswordValidator.isValidPassword(user.getPassword()))
+                throw new ApiCustomException(HttpStatus.BAD_REQUEST, "Invalid password");
+
+            var company = iCompanyRepository.save(user.getProfile().getCompany());
+
+            var person = iPersonRepository.save(user.getPerson());
+
+            user.getProfile().setCompany(company);
+
+            var profile = iProfileRepository.save(user.getProfile());
+
+            user.setProfile(profile);
+
+            user.setPerson(person);
+
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+
+            iUsersRepository.save(user);
+
+            return "Usuário criado com sucesso";
+
+        } catch (ApiCustomException e) {
+            throw new ApiCustomException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            throw new ApiCustomException(HttpStatus.BAD_REQUEST, "Não foi possível criar a conta");
+        }
+    }
+
 }

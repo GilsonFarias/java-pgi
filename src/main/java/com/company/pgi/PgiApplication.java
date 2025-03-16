@@ -8,24 +8,24 @@ import org.springframework.web.bind.annotation.RestController;
 @SpringBootApplication
 public class PgiApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PgiApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(PgiApplication.class, args);
+    }
 
-    //Gera uma senha criptografada 
-	//     public static void main(String[] args) {
-    //     // Crie uma instância do BCryptPasswordEncoder
-    //     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    // Gera uma senha criptografada
+    // public static void main(String[] args) {
+    // // Crie uma instância do BCryptPasswordEncoder
+    // BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    //     // Senha a ser criptografada
-    //     String rawPassword = "123456";
+    // // Senha a ser criptografada
+    // String rawPassword = "123456";
 
-    //     // Gera o hash da senha
-    //     String encodedPassword = passwordEncoder.encode(rawPassword);
+    // // Gera o hash da senha
+    // String encodedPassword = passwordEncoder.encode(rawPassword);
 
-    //     // Exibe a senha criptografada
-    //     System.out.println("Senha original: " + rawPassword);
-    //     System.out.println("Senha criptografada (BCrypt): " + encodedPassword);
+    // // Exibe a senha criptografada
+    // System.out.println("Senha original: " + rawPassword);
+    // System.out.println("Senha criptografada (BCrypt): " + encodedPassword);
     // }
 
 }

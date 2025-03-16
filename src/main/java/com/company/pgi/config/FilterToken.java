@@ -17,35 +17,36 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class FilterToken extends OncePerRequestFilter{
+public class FilterToken extends OncePerRequestFilter {
 
     @Autowired
     private TokenService tokenService;
 
     @Autowired
-    private IUsersRepository usersRepository;
+    private IUsersRepository iUsersRepository;
 
     @Override
-    protected void doFilterInternal( @SuppressWarnings("null") HttpServletRequest request, @SuppressWarnings("null") HttpServletResponse response,
-        @SuppressWarnings("null") FilterChain filterChain) throws IOException, ServletException {
-        
+    protected void doFilterInternal(@SuppressWarnings("null") HttpServletRequest request,
+            @SuppressWarnings("null") HttpServletResponse response,
+            @SuppressWarnings("null") FilterChain filterChain) throws IOException, ServletException {
+
         String token;
 
         var authorizationHeader = request.getHeader("Authorization");
 
-        if(authorizationHeader != null){
+        if (authorizationHeader != null) {
             token = authorizationHeader.replace("Bearer ", "");
             var subject = this.tokenService.getSubject(token);
 
-            var users = this.usersRepository.findByEmail(subject);
+            var users = iUsersRepository.findByEmail(subject);
 
-            var authentication = new UsernamePasswordAuthenticationToken( users, users,  users.getAuthorities());
+            var authentication = new UsernamePasswordAuthenticationToken(users, users, users.getAuthorities());
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         filterChain.doFilter(request, response);
-    
+
     }
 
 }
