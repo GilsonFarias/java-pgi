@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.company.pgi.model.Users;
 import com.company.pgi.model.dto.LoginDto;
 import com.company.pgi.model.dto.ResponseBase;
+import com.company.pgi.model.dto.users.UsersAccountDto;
 import com.company.pgi.model.dto.users.UsersDto;
 import com.company.pgi.model.dto.users.UsersSPDto;
 import com.company.pgi.service.UsersService;
@@ -78,10 +78,10 @@ public class UserController {
         return ResponseEntity.ok(rsp);
     }
 
-    @PostMapping("/InsertUserAccount")
-    public ResponseEntity<String> postMethodName(@RequestBody Users Users) {
+    @PostMapping("/insertUserAccount")
+    public ResponseEntity<String> postMethodName(@RequestBody UsersAccountDto usersAccountDto) {
 
-        userService.createUserAccount(Users);
+        userService.createUserAccount(usersAccountDto);
 
         return ResponseEntity.ok("Seu cadastro foi concluído");
     }

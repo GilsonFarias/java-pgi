@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.company.pgi.exeception.ApiCustomException;
 import com.company.pgi.model.Users;
 import com.company.pgi.model.dto.LoginDto;
+import com.company.pgi.model.dto.users.UsersAccountDto;
 import com.company.pgi.model.dto.users.UsersDto;
 import com.company.pgi.model.dto.users.UsersSPDto;
 import com.company.pgi.repository.ICompanyRepository;
@@ -18,8 +19,10 @@ import com.company.pgi.repository.IUsersRepository;
 import com.company.pgi.repository.person.IPersonRepository;
 import com.company.pgi.repository.profile.IProfileRepository;
 import com.company.pgi.service.Mapper.IUsersMapper;
+import com.company.pgi.service.Mapper.UsersMapperComponet;
 import com.company.pgi.service.permissions.IPermissionService;
 import com.company.pgi.service.person.IPersonService;
+import com.company.pgi.utils.CreateSchema;
 import com.company.pgi.utils.AuthenticatedUser;
 import com.company.pgi.utils.PasswordValidator;
 
@@ -50,6 +53,12 @@ public class UsersService {
 
     @Autowired
     private IProfileRepository iProfileRepository;
+
+    @Autowired
+    private CreateSchema createSchema;
+
+    @Autowired
+    private UsersMapperComponet usersMapperComponet;
 
     // @Override
     public UsersSPDto userInsert(UsersDto userDto) {
@@ -182,27 +191,31 @@ public class UsersService {
     }
 
     @Transactional
-    public String createUserAccount(Users user) {
+    public String createUserAccount(UsersAccountDto usersAccountDto) {
         try {
+
+            Users user = IUsersMapper.INSTANCE.toEntity(usersAccountDto.getUsersDto());
 
             if (!PasswordValidator.isValidPassword(user.getPassword()))
                 throw new ApiCustomException(HttpStatus.BAD_REQUEST, "Invalid password");
 
             var company = iCompanyRepository.save(user.getProfile().getCompany());
-
+            
             var person = iPersonRepository.save(user.getPerson());
-
+            
             user.getProfile().setCompany(company);
-
+            
             var profile = iProfileRepository.save(user.getProfile());
-
+            
             user.setProfile(profile);
-
+            
             user.setPerson(person);
-
+            
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-
+            
             iUsersRepository.save(user);
+            
+            createSchema.addSquema(usersAccountDto.getModelSystem() + "_" + company.getCnpj());
 
             return "Usuário criado com sucesso";
 
