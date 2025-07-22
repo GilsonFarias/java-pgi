@@ -102,10 +102,10 @@ public class PermissionService implements IPermissionService {
     }
 
     @Override
-    public ResponseBase<Permissions> updateProfiles() {
+    public ResponseBase<Permissions> updateProfiles(Long idProfile) {
         ResponseBase<Permissions> responseBase = new ResponseBase<>();
 
-        iPermissionsProfileRepository.saveAll(SystemPermissions.getSystemPermissionsProfile());
+        iPermissionsProfileRepository.saveAll(SystemPermissions.getSystemPermissionsProfile(idProfile));
 
         return responseBase;
     }

@@ -49,13 +49,13 @@ public class SystemPermissions {
         return permissions;
     }
 
-    public static List<PermissionsProfile> getSystemPermissionsProfile() {
+    public static List<PermissionsProfile> getSystemPermissionsProfile(Long idProfile) {
 
         List<PermissionsProfile> permissionsProfiles = new ArrayList<>();
 
         Profile uProfile = new Profile();
 
-        uProfile.setId(1L);
+        uProfile.setId(idProfile);
 
         var permissions = getSystemPermissions();
 

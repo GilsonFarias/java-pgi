@@ -16,6 +16,6 @@ public interface IPermissionService {
 
     ResponseBase<Permissions> ListPermissions();
 
-    ResponseBase<Permissions> updateProfiles();
+    ResponseBase<Permissions> updateProfiles(Long idProfile);
 
 }

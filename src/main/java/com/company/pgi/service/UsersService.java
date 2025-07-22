@@ -61,6 +61,7 @@ public class UsersService {
     private UsersMapperComponet usersMapperComponet;
 
     // @Override
+    @Transactional
     public UsersSPDto userInsert(UsersDto userDto) {
         iPermissionService.ValidPermission("USE101");
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();

@@ -3,6 +3,8 @@ package com.company.pgi.controller.permissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,15 +28,15 @@ public class PermissionsController {
         return "Permissões atualizadas";
     }
 
-    @GetMapping("/atualizarProfiles")
-    public String updateProfiles() {
+    @PostMapping("/atualizarProfiles/{idProfile}")
+    public String updateProfiles(@PathVariable Long idProfile) {
 
-        iPermissionService.updateProfiles();
+        iPermissionService.updateProfiles(idProfile);
 
         return "Permissões por perfil atualizadas";
     }
 
-    @GetMapping("list")
+    @GetMapping("/list")
     public ResponseBase<Permissions> ListPermissions() {
 
         return iPermissionService.ListPermissions();
