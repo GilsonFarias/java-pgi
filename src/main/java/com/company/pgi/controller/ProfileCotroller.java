@@ -15,7 +15,7 @@ import com.company.pgi.model.Profile;
 import com.company.pgi.service.profile.IProfileService;
 
 @RestController
-@RequestMapping("api/profile")
+@RequestMapping("/api/profile")
 public class ProfileCotroller {
 
     @Autowired

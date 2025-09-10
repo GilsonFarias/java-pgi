@@ -104,7 +104,7 @@ public class UsersService {
 
             switch (user.getUserType()) {
                 case "N1" -> userList = iUserRepository.findAll();
-                case "N3", "N4" -> {
+                case "N2", "N3", "N4" -> {
                     var company = user.getProfile().getCompany();
                     userList = iUserRepository.findByProfile_Company(company);
                 }

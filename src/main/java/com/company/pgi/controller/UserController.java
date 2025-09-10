@@ -45,12 +45,6 @@ public class UserController {
         }
     }
 
-    @GetMapping("/listByCompany")
-    public ResponseEntity<String> getListByCompany() {
-
-        return ResponseEntity.ok("teste");
-    }
-
     @PostMapping("/insert")
     public ResponseEntity<UsersSPDto> userInsert(@RequestBody @Validated(UsersDto.OnCreate.class) UsersDto usersDto) {
 
