@@ -39,12 +39,19 @@ public class SystemPermissions {
         permissions.add(new Permissions("UPF103", "ADM", "Deletar perfil", "Deletar perfil"));
         permissions.add(new Permissions("UPF104", "ADM", "Visualizar perfil", "Visualizar perfil"));
         permissions.add(new Permissions("UPF105", "ADM", "Atualizar perfil", "Atualizar perfil"));
-        // Products / STOCK
+        // STOCK / Products
         permissions.add(new Permissions("PRO101", "STOCK", "Incluir produto", "Incluir produto"));
         permissions.add(new Permissions("PRO102", "STOCK", "Editar produto", "Editar produto"));
         permissions.add(new Permissions("PRO103", "STOCK", "Deletar produto", "Deletar produto"));
         permissions.add(new Permissions("PRO104", "STOCK", "Visualizar produto", "Visualizar produto"));
         permissions.add(new Permissions("PRO105", "STOCK", "Listar produto", "Listar produto"));
+        // VivaPlase / broker
+        permissions.add(new Permissions("BRO101", "VIVA", "Incluir corretor", "Incluir corretor"));
+        permissions.add(new Permissions("BRO102", "VIVA", "Editar corretor", "Editar corretor"));
+        permissions.add(new Permissions("BRO103", "VIVA", "Deletar corretor", "Deletar corretor"));
+        permissions.add(new Permissions("BRO104", "VIVA", "Visualizar corretor", "Visualizar corretor"));
+        permissions.add(new Permissions("BRO105", "VIVA", "Listar corretor", "Listar corretor"));
+
 
         return permissions;
     }

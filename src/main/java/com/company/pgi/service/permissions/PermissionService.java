@@ -37,7 +37,7 @@ public class PermissionService implements IPermissionService {
 
         var permissions = iPermissionsRepository.findAll();
         if (permissions.isEmpty()) {
-            throw new ApiCustomException(HttpStatus.NOT_ACCEPTABLE, "Resgistro nãos encontrados");
+            throw new ApiCustomException(HttpStatus.NOT_ACCEPTABLE, "Resgistro não encontrados");
         }
 
         responseBase.setData(permissions);
