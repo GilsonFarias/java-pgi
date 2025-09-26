@@ -14,6 +14,12 @@ public class SystemPermissions {
 
     public static List<Permissions> getSystemPermissions() {
         List<Permissions> permissions = new ArrayList<>();
+        // Company
+        permissions.add(new Permissions("CPY101", "AMD", "Incluir empresa", "Incluir empresa"));
+        permissions.add(new Permissions("CPY102", "AMD", "Editar empresa", "Editar empresa"));
+        permissions.add(new Permissions("CPY103", "AMD", "Deletar empresa", "Deletar empresa"));
+        permissions.add(new Permissions("CPY104", "AMD", "Visualizar empresa", "Visualizar empresa"));
+        permissions.add(new Permissions("CPY105", "AMD", "Listar empresas", "Listar empresas"));
         // Penson
         permissions.add(new Permissions("PEN101", "AMD", "Incluir pessoa", "Incluir pessoa"));
         permissions.add(new Permissions("PEN102", "AMD", "Editar pessoa", "Editar pessoa"));
@@ -33,6 +39,8 @@ public class SystemPermissions {
         permissions.add(new Permissions("PER103", "ADM", "Deletar permissão", "Deletar permissão"));
         permissions.add(new Permissions("PER104", "ADM", "Visualizar permissão", "Visualizar permissão"));
         permissions.add(new Permissions("PER105", "ADM", "Atualizar permissão", "Atualizar permissão"));
+        // Módulos
+        permissions.add(new Permissions("MOD101", "ADM", "Criar módulo", "Criar módulo"));
         // Perfil do usuário
         permissions.add(new Permissions("UPF101", "ADM", "Incluir perfil", "Incluir perfil"));
         permissions.add(new Permissions("UPF102", "ADM", "Editar perfil", "Editar perfil"));

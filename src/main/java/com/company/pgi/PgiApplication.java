@@ -10,7 +10,7 @@ public class PgiApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(PgiApplication.class, args);
-    }
+    }   
 
     // Gera uma senha criptografada
     // public static void main(String[] args) {
