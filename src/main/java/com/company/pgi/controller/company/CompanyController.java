@@ -1,6 +1,7 @@
 package com.company.pgi.controller.company;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,11 @@ public class CompanyController{
         return iCompanyService.getAllCompany();
     }
 
+    @PutMapping("/list2")
+    public List<Company> getCompanyBaseCNPJ(@RequestBody Map<String, String> requestBody) {
+        String CNPJ = requestBody.get("baseCNPJ");
+        return iCompanyService.getCompanyBaseCNPJ(CNPJ);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Company> getCompanyById(@PathVariable Long id) {

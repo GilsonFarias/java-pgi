@@ -92,4 +92,24 @@ public class ProfileService implements IProfileService {
         return iProfileRepository.findProfileByCompany(company);
     }
 
+    @Override
+    public ApiCustomException deleteProfile(Long id) {
+        iPermissionService.ValidPermission("UPF103");
+
+        Profile profile = iProfileRepository.findProfileById(id)
+                .orElseThrow(() -> new ApiCustomException(HttpStatus.ACCEPTED, "Perfil não encontrado"));
+
+        try {
+            iProfileRepository.deleteById(profile.getId());
+            return new ApiCustomException(HttpStatus.OK, "Perfil deletado com sucesso.");
+        } catch (Exception e) {
+            throw new ApiCustomException(HttpStatus.BAD_REQUEST,
+                    "Não foi possível deletar o perfil. Verifique se há usuários vinculados a ele.");
+        }
+    }
+
+
+
+    
+
 }

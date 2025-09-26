@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.company.pgi.exeception.ApiCustomException;
 import com.company.pgi.model.Profile;
 
 @Service
@@ -17,4 +18,7 @@ public interface IProfileService {
 
     Profile getProfileById(Long id);
 
+    //String deleteProfile(Long id);
+
+    ApiCustomException deleteProfile(Long id);
 }

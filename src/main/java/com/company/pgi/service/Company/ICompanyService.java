@@ -7,6 +7,7 @@ import com.company.pgi.model.Company;
 
 public interface ICompanyService {
     List<Company> getAllCompany();
+    List<Company> getCompanyBaseCNPJ(String baseCNPJ);
     Optional<Company> getCompanyById(Long id);
     Company saveCompany(Company company);
     void deleteCompany (Long id);

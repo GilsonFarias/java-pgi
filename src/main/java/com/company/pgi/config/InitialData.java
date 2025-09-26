@@ -14,6 +14,7 @@ import com.company.pgi.repository.ICompanyRepository;
 import com.company.pgi.repository.IUsersRepository;
 import com.company.pgi.repository.person.IPersonRepository;
 import com.company.pgi.repository.profile.IProfileRepository;
+import com.company.pgi.service.permissions.IPermissionService;
 
 @Component
 public class InitialData implements CommandLineRunner {
@@ -22,15 +23,18 @@ public class InitialData implements CommandLineRunner {
     private final IProfileRepository iProfileRepository;
     private final ICompanyRepository iCompanyRepository;
     private final IPersonRepository iPersonRepository;
+    private final IPermissionService iPermissionService;
 
     public InitialData(IUsersRepository iUsersRepository,
             IProfileRepository iProfileRepository,
             ICompanyRepository iCompanyRepository,
-            IPersonRepository iPersonRepository) {
+            IPersonRepository iPersonRepository,
+            IPermissionService iPermissionService) {
         this.iUsersRepository = iUsersRepository;
         this.iProfileRepository = iProfileRepository;
         this.iCompanyRepository = iCompanyRepository;
         this.iPersonRepository = iPersonRepository;
+        this.iPermissionService = iPermissionService;
     }
 
     @Override
@@ -69,6 +73,10 @@ public class InitialData implements CommandLineRunner {
             userAdm.setPerson(regPerson);
             userAdm.setProfile(regProfile);
             iUsersRepository.save(userAdm);
+            
+            iPermissionService.updatePermissionsList();
+            
+            iPermissionService.updateProfiles(1L);
 
             System.out.println("Dados iniciais cadastrados.");
         }

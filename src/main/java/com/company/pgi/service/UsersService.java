@@ -19,7 +19,6 @@ import com.company.pgi.repository.IUsersRepository;
 import com.company.pgi.repository.person.IPersonRepository;
 import com.company.pgi.repository.profile.IProfileRepository;
 import com.company.pgi.service.Mapper.IUsersMapper;
-import com.company.pgi.service.Mapper.UsersMapperComponet;
 import com.company.pgi.service.permissions.IPermissionService;
 import com.company.pgi.service.person.IPersonService;
 import com.company.pgi.utils.CreateSchema;
@@ -57,8 +56,6 @@ public class UsersService {
     @Autowired
     private CreateSchema createSchema;
 
-    @Autowired
-    private UsersMapperComponet usersMapperComponet;
 
     // @Override
     @Transactional
@@ -216,7 +213,7 @@ public class UsersService {
             
             iUsersRepository.save(user);
             
-            createSchema.addSquema(usersAccountDto.getModelSystem() + "_" + company.getCnpj());
+            //createSchema.addSquema(usersAccountDto.getModelSystem() + "_" + company.getCnpj());
 
             return "Usuário criado com sucesso";
 
@@ -226,5 +223,5 @@ public class UsersService {
             throw new ApiCustomException(HttpStatus.BAD_REQUEST, "Não foi possível criar a conta");
         }
     }
-
+    
 }
